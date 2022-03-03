@@ -10,6 +10,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"github.com/morteza-shahrabi-farahani/golang-exercises/models"
 )
 
 const version = "1.0.0"
@@ -29,6 +30,7 @@ type AppStatus struct {
 type Application struct {
 	Cfg    Config      `json:"config"`
 	Logger *log.Logger `json:"logger"`
+	Models models.Models `json:"models"`
 }
 
 func main() {
@@ -45,6 +47,8 @@ func main() {
 		fmt.Println("error is ", err)
 	}
 	defer db.Close()
+	
+	app.Models = models.NewModel(db)
 
 	server := &http.Server{
 		Addr:         app.Cfg.port,
