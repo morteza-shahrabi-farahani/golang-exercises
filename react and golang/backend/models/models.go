@@ -24,21 +24,21 @@ type Movie struct {
 	MPAARating  string       `json:"mpaa_rating"`
 	CreatedAt   time.Time    `json:"created_at"`
 	UpdatedAt   time.Time    `json:"updated_at"`
-	MovieGenres []MovieGenre `json:"movie_genres"`
+	MovieGenres map[int]string `json:"movie_genres"`
 }
 
 type Genre struct {
-	ID        int       `json:"id"`
+	ID        int       `json:"-"`
 	GenreName string    `json:"genre_name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 }
 
 type MovieGenre struct {
 	ID        int       `json:"id"`
-	MovieID   int       `json:"movie_id"`
-	GenreID   int       `json:"genre_id"`
+	MovieID   int       `json:"-"`
+	GenreID   int       `json:"-"`
 	Genre     Genre     `json:"genre"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 }

@@ -34,9 +34,24 @@ func (app *Application) getOneMovie(w http.ResponseWriter, r *http.Request) {
 	// movie.Year = 1993
 	// movie.ReleaseDate = time.Now()
 
-	app.writeJSON(w, http.StatusOK, movie, "movie")
+	err = app.writeJSON(w, http.StatusOK, movie, "movie")
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 }
 
 func (app *Application) getAllMovies(w http.ResponseWriter, r *http.Request) {
+	movies, err := app.Models.DB.All()
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 
+	err = app.writeJSON(w, http.StatusOK, movies, "movies")
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	
 }
