@@ -6,12 +6,12 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (app *Application) routes() *httprouter.Router {
-	var router = httprouter.New() 
+func (app *Application) routes() http.Handler {
+	var router = httprouter.New()
 
 	router.HandlerFunc(http.MethodGet, "/status", app.statusHandler)
 	router.HandlerFunc(http.MethodGet, "/movie/:id", app.getOneMovie)
 	router.HandlerFunc(http.MethodGet, "/movies", app.getAllMovies)
 
-	return router
+	return app.enableCORS(router)
 }
