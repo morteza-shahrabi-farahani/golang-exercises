@@ -49,12 +49,12 @@ function App() {
                 </ListItemButton>
               </ListItem>
               <Divider />
-              <ListItem disablePadding component={Link} to="/categories">
+              <ListItem disablePadding component={Link} to="/genres">
                 <ListItemButton>
                   <ListItemIcon>
                     <CategoryIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Categories" />
+                  <ListItemText primary="Genres" />
                 </ListItemButton>
               </ListItem>
               <Divider />
@@ -74,9 +74,9 @@ function App() {
               <Route path="/movies" element={<Movies />}></Route>
               <Route path="/movie-catalogue" element={<Admin />}></Route>
               <Route path="/movies/:id" element={<MoviePage />}></Route>
-              <Route path="/categories" element={<Categories />}></Route>
+              <Route path="/genres" element={<Categories />}></Route>
               <Route
-                path="/categories/:category_name"
+                path="/genres/:genre_name"
                 element={<CategoryPage />}
               ></Route>
               <Route path="/" element={<Home />}></Route>
