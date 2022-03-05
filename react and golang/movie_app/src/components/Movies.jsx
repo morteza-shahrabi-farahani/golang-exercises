@@ -12,7 +12,7 @@ function Movies() {
       setMovieList(res.data.movies);
       setIsLoaded(true);
     });
-  });
+  }, []);
 
   if (!isLoaded) {
     return <p>Loading...</p>;
