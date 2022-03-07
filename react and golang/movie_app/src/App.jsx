@@ -10,6 +10,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import HomeIcon from "@mui/icons-material/Home";
+import AddIcon from "@mui/icons-material/Add";
 import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import CategoryIcon from "@mui/icons-material/Category";
 import Divider from "@mui/material/Divider";
@@ -19,6 +20,8 @@ import Admin from "./components/Admin";
 import MoviePage from "./components/MoviePage";
 import Categories from "./components/Categories";
 import CategoryPage from "./components/CategoryPage";
+import AddOrEditMovie from "./components/AddOrEditMovie";
+import { Add } from "@mui/icons-material";
 
 function App() {
   return (
@@ -66,6 +69,15 @@ function App() {
                   <ListItemText primary="Movie Catalogue" />
                 </ListItemButton>
               </ListItem>
+              <Divider />
+              <ListItem disablePadding component={Link} to="/admin/movie/add">
+                <ListItemButton>
+                  <ListItemIcon>
+                    <AddIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Add Movie" />
+                </ListItemButton>
+              </ListItem>
             </List>
           </Grid>
 
@@ -75,6 +87,14 @@ function App() {
               <Route path="/movie-catalogue" element={<Admin />}></Route>
               <Route path="/movies/:id" element={<MoviePage />}></Route>
               <Route path="/genres" element={<Categories />}></Route>
+              <Route
+                path="/admin/movie/add"
+                element={<AddOrEditMovie />}
+              ></Route>
+              <Route
+                path="/admin/movie/:id/edit"
+                element={<AddOrEditMovie />}
+              ></Route>
               <Route
                 path="/genres/:genre_name"
                 element={<CategoryPage />}
