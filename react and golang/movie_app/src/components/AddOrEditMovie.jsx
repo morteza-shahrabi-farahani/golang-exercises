@@ -1,48 +1,46 @@
 import { React, useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import Alert from "../ui-components/Alert";
 
-function AddOrEditMovie() {
-  const [release_date, setRelease_date] = useState("");
+function AddOrEditMovie(props) {
+  const navigate = useNavigate();
+  const [loaded, setloaded] = useState(false);
   const { id } = useParams();
   const [movie, setMovie] = useState({});
-  // setMovie({
-  //   title: "",
-  //   releaseDate: "",
-  //   runtime: "",
-  //   mppaRating: "",
-  //   rating: "",
-  //   description: "",
-  // });
-  // if (id !== undefined) {
+  const [alert, setAlert] = useState({
+    type: "d-none",
+    message: "",
+  });
   useEffect(() => {
-    if (id != undefined) {
+    if (props.do == "edit") {
       axios.get(`http://localhost:8080/movie/${id}`).then((res) => {
         console.log(res);
         console.log(res.data.movie);
         setMovie(res.data.movie);
-        // setIsLoaded(true);
+        console.log("hellohellohello");
+        id = null;
+        setloaded(true);
+        setAlert({
+          type: "d-none",
+          message: "",
+        });
+      });
+    } else {
+      setMovie({
+        title: "",
+        release_date: "",
+        runtime: "",
+        mpaa_rating: "",
+        rating: "",
+        description: "",
+      });
+      setAlert({
+        type: "d-none",
+        message: "",
       });
     }
-  }, []);
-  // } else {
-  //   setMovie({
-  //     title: "",
-  //     releaseDate: "",
-  //     runtime: "",
-  //     mppaRating: "",
-  //     rating: "",
-  //     description: "",
-  //   });
-  // }
-  // const [movie, setMovie] = useState({
-  //   title: "",
-  //   releaseDate: "",
-  //   runtime: "",
-  //   mppaRating: "",
-  //   rating: "",
-  //   description: "",
-  // });
+  }, [props.do]);
 
   function handleChangeInput(event) {
     let value = event.target.value;
@@ -51,20 +49,76 @@ function AddOrEditMovie() {
       ...prevState,
       [name]: value,
     }));
-    // console.log(movie);
+    console.log(movie);
+    console.log(name);
+    console.log(value);
   }
 
   function handleSubmit(event) {
     event.preventDefault();
     console.log(movie);
+    const data = new FormData(event.target);
+    const sendData = Object.fromEntries(data.entries());
+    let requestOptions;
+    let url;
+
+    if (props.do == "add") {
+      requestOptions = {
+        method: "POST",
+        body: JSON.stringify(sendData),
+      };
+      url = "http://localhost:8080/admin/add-movie";
+    } else if (props.do == "edit") {
+      sendData.id = id;
+      requestOptions = {
+        method: "PUT",
+        body: JSON.stringify(sendData),
+      };
+      url = `http://localhost:8080/admin/movie/${id}/edit`;
+    }
+
+    console.log(sendData);
+
+    fetch(url, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        // console.log(data);
+        if (data.error) {
+          setAlert({ type: "alert-danger", message: data.error.message });
+        } else {
+          console.log(requestOptions.body);
+          setAlert({
+            type: "alert-success",
+            message: "movie added to database successfully.",
+          });
+          navigate("/movies");
+        }
+      });
+  }
+
+  function handleDelete() {
+    const requestOptions = {
+      method: "DELETE",
+    };
+    fetch(`http://localhost:8080/admin/movie/${id}/delete`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          setAlert({ type: "alert-danger", message: data.error.message });
+        } else {
+          setAlert({
+            type: "alert-success",
+            message: "movie added to database successfully.",
+          });
+        }
+      });
   }
 
   return (
     <>
-      {/* {console.log(movie.mpaa_rating)} */}
-      {/* {console.log(movie.release_date)} */}
-      {console.log(typeof movie.release_date)}
       <h2>Add or Edit Movie</h2>
+      {}
+      <Alert alertType={alert.type} alertMessage={alert.message} />
       <form onSubmit={handleSubmit}>
         <label htmlFor="title" className="form-label">
           Title
@@ -82,7 +136,7 @@ function AddOrEditMovie() {
           Release Date
         </label>
         <input
-          type="text"
+          type="date"
           name="release_date"
           id="release_date"
           value={
@@ -106,13 +160,13 @@ function AddOrEditMovie() {
           onChange={handleChangeInput}
         />
         <br />
-        <label htmlFor="mppa_rating" className="form-label">
+        <label htmlFor="mpaa_rating" className="form-label">
           MPAA RAting
         </label>
         <select
           className="form-select"
-          name="mppa_rating"
-          id="mppa_rating"
+          name="mpaa_rating"
+          id="mpaa_rating"
           value={movie.mpaa_rating}
           onChange={handleChangeInput}
         >
@@ -136,7 +190,7 @@ function AddOrEditMovie() {
 
         <br></br>
         <label htmlFor="rating" className="form-label">
-          Runtime
+          Rating
         </label>
         <input
           type="text"
@@ -161,6 +215,11 @@ function AddOrEditMovie() {
 
         <br />
         <button className="btn btn-primary">Save</button>
+        {props.do == "edit" && (
+          <Link to="/movies" className="btn btn-danger" onClick={handleDelete}>
+            Delete
+          </Link>
+        )}
       </form>
     </>
   );

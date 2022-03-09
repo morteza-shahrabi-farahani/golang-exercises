@@ -107,6 +107,8 @@ func (app *Application) addMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println(movieReceiver.Title)
+	fmt.Println(movieReceiver.ID)
+	fmt.Println(movieReceiver.Description)
 
 	var newMovie models.Movie
 	newMovie.Title = movieReceiver.Title
@@ -141,7 +143,6 @@ func (app *Application) addMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
 
 func (app *Application) editMovie(w http.ResponseWriter, r *http.Request) {
 	var movieReceiver models.MovieReceiver
@@ -191,3 +192,34 @@ func (app *Application) editMovie(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (app *Application) deleteMovie(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil {
+		fmt.Println(err)
+		app.errorJSON(w, err)
+		return
+	}
+
+	err = app.Models.DB.DeleteMovie(id)
+	if err != nil {
+		fmt.Println(err)
+		app.errorJSON(w, err)
+		return
+	}
+
+
+	type jsonResp struct {
+		OK bool `json:"ok"`
+	}
+
+	ok := jsonResp{
+		OK: true,
+	}
+
+	err = app.writeJSON(w, http.StatusOK, ok, "response")
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+}

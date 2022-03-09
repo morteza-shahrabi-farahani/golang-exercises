@@ -85,15 +85,15 @@ function App() {
             <Routes>
               <Route path="/movies" element={<Movies />}></Route>
               <Route path="/movie-catalogue" element={<Admin />}></Route>
-              <Route path="/movies/:id" element={<MoviePage />}></Route>
+              <Route path="/movie/:id" element={<MoviePage />}></Route>
               <Route path="/genres" element={<Categories />}></Route>
               <Route
                 path="/admin/movie/add"
-                element={<AddOrEditMovie />}
+                element={<AddOrEditMovie do={"add"} />}
               ></Route>
               <Route
                 path="/admin/movie/:id/edit"
-                element={<AddOrEditMovie />}
+                element={<AddOrEditMovie do={"edit"} />}
               ></Route>
               <Route
                 path="/genres/:genre_name"
