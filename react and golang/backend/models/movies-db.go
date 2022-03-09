@@ -232,3 +232,21 @@ func (db *DBModel) GetAllMoviesByGenreName(genre_name string) ([]Movie, error) {
 
 	return movies, nil
 }
+
+func (db *DBModel) AddMovieToDB(movie Movie) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	fmt.Println("hello")
+
+	query := `insert into movies (title, description, year, release_date, rating, runtime, mpaa_rating, created_at, updated_at) 
+			values ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+
+	_, err := db.DB.ExecContext(ctx, query, movie.Title, movie.Description, movie.Year, movie.ReleaseDate, movie.Rating, movie.Runtime,
+		movie.MPAARating, movie.CreatedAt, movie.UpdatedAt)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}
