@@ -168,7 +168,7 @@ func (app *Application) editMovie(w http.ResponseWriter, r *http.Request) {
 	newMovie.CreatedAt = newMovie.CreatedAt
 	newMovie.UpdatedAt = time.Now()
 
-	err = app.Models.DB.AddMovieToDB(newMovie)
+	err = app.Models.DB.EditMovieInDB(newMovie)
 	if err != nil {
 		fmt.Println(err)
 		app.errorJSON(w, err)
