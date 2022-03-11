@@ -57,8 +57,7 @@ func (app *Application) login(w http.ResponseWriter, r *http.Request) {
 		app.errorJSON(w, err)
 		return
 	}
-
-	app.writeJSON(w, http.StatusOK, jwtBytes, "response")
+	fmt.Println("builden token is here: ", string(jwtBytes))
+	app.writeJSON(w, http.StatusOK, string(jwtBytes), "response")
 
 }
-

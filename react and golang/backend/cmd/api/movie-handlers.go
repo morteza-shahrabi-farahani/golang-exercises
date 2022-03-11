@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -193,8 +194,15 @@ func (app *Application) editMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) deleteMovie(w http.ResponseWriter, r *http.Request) {
-	params := httprouter.ParamsFromContext(r.Context())
-	id, err := strconv.Atoi(params.ByName("id"))
+	// params := httprouter.ParamsFromContext(r.Context())
+	// fmt.Println(params)
+	// id, err := strconv.Atoi(params.ByName("id"))
+	// id2 := r.URL.Query().Get("id")
+	// fmt.Println(id2)
+	// fmt.Println(ok)
+	fmt.Println(r.URL.Path)
+	holder := strings.Split(r.URL.Path, "/")
+	id, err := strconv.Atoi(holder[3])
 	if err != nil {
 		fmt.Println(err)
 		app.errorJSON(w, err)
@@ -208,16 +216,15 @@ func (app *Application) deleteMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	type jsonResp struct {
 		OK bool `json:"ok"`
 	}
 
-	ok := jsonResp{
+	ok2 := jsonResp{
 		OK: true,
 	}
 
-	err = app.writeJSON(w, http.StatusOK, ok, "response")
+	err = app.writeJSON(w, http.StatusOK, ok2, "response")
 	if err != nil {
 		app.errorJSON(w, err)
 		return

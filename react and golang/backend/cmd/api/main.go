@@ -39,7 +39,7 @@ func main() {
 	config.port = ":8080"
 	config.env = "backend development with golang"
 	config.dsn = "postgres://postgres:123456@localhost/go_movies?sslmode=disable"
-	config.jwtKey = "1cbec737f863e4922cee63cc2ebbfaafcd1cff8b790d8cfd2e6a5d550b648afa"
+	config.jwtKey = "cfdf2510277fc5e18330a7c7782e79ab823fe7f536a9cdf59e71e85209e13e16"
 
 	var app Application
 	app.Cfg = config
