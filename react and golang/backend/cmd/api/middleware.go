@@ -10,3 +10,14 @@ func (app *Application) enableCORS(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func (app *Application) checkToken(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)) {
+		w.Header().Set("Vary", "Authorization")
+		authHeader := w.Header().Get("Authorization")
+
+		if authHeader == "" {
+			
+		}
+	}
+}

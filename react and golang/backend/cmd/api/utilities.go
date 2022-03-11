@@ -29,6 +29,7 @@ func (app *Application) errorJSON(w http.ResponseWriter, err error) {
 		Message string `json:"message"`
 	}
 
+	fmt.Println(err.Error())
 	var error = jsonError{Message: err.Error()}
 
 	app.writeJSON(w, http.StatusBadRequest, error, "Error")

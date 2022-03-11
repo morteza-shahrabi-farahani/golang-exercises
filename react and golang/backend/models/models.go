@@ -56,3 +56,10 @@ type MovieReceiver struct {
 	UpdatedAt   time.Time      `json:"updated_at"`
 	MovieGenres map[int]string `json:"movie_genres"`
 }
+
+type User struct {
+	ID       int    `json:"id"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}

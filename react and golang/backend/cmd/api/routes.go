@@ -17,6 +17,7 @@ func (app *Application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/admin/add-movie", app.addMovie)
 	router.HandlerFunc(http.MethodPut, "/admin/movie/:id/edit", app.editMovie)
 	router.HandlerFunc(http.MethodDelete, "/admin/movie/:id/delete", app.deleteMovie)
+	router.HandlerFunc(http.MethodPost, "/login", app.login)
 
 	return app.enableCORS(router)
 }

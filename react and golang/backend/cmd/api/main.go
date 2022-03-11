@@ -16,9 +16,10 @@ import (
 const version = "1.0.0"
 
 type Config struct {
-	port string
-	env  string
-	dsn  string
+	port   string
+	env    string
+	dsn    string
+	jwtKey string
 }
 
 type AppStatus struct {
@@ -28,8 +29,8 @@ type AppStatus struct {
 }
 
 type Application struct {
-	Cfg    Config      `json:"config"`
-	Logger *log.Logger `json:"logger"`
+	Cfg    Config        `json:"config"`
+	Logger *log.Logger   `json:"logger"`
 	Models models.Models `json:"models"`
 }
 
@@ -38,6 +39,7 @@ func main() {
 	config.port = ":8080"
 	config.env = "backend development with golang"
 	config.dsn = "postgres://postgres:123456@localhost/go_movies?sslmode=disable"
+	config.jwtKey = "1cbec737f863e4922cee63cc2ebbfaafcd1cff8b790d8cfd2e6a5d550b648afa"
 
 	var app Application
 	app.Cfg = config
@@ -47,7 +49,7 @@ func main() {
 		fmt.Println("error is ", err)
 	}
 	defer db.Close()
-	
+
 	app.Models = models.NewModel(db)
 
 	server := &http.Server{
