@@ -24,7 +24,11 @@ func (app *Application) writeJSON(w http.ResponseWriter, status int, data interf
 	return nil
 }
 
-func (app *Application) errorJSON(w http.ResponseWriter, err error) {
+func (app *Application) errorJSON(w http.ResponseWriter, err error, statusNumber ...int) {
+	statusCode := http.StatusBadRequest
+	if len(statusNumber) > 0 {
+		statusCode = statusNumber[0]
+	}
 	type jsonError struct {
 		Message string `json:"message"`
 	}
@@ -32,5 +36,5 @@ func (app *Application) errorJSON(w http.ResponseWriter, err error) {
 	fmt.Println(err.Error())
 	var error = jsonError{Message: err.Error()}
 
-	app.writeJSON(w, http.StatusBadRequest, error, "Error")
+	app.writeJSON(w, statusCode, error, "Error")
 }
