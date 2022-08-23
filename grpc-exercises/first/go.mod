@@ -1,4 +1,4 @@
-module golang-exercises/grpc-exercises/first
+module github.com/morteza-shahrabi-farahani/golang-exercises/grpc-exercises/first
 
 go 1.18
 
