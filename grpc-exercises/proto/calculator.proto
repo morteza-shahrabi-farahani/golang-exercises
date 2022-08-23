@@ -13,6 +13,6 @@ message SumResponse {
     int32   result = 1;
 }
 
-service SumService {
+service CalculatorService {
     rpc Sum(SumRequest) returns (SumResponse) {};
 }

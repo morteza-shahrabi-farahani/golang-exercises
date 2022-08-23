@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/morteza-shahrabi-farahani/golang-exercises/grpc-excercises/proto"
 	"google.golang.org/grpc"
 )
 
@@ -16,7 +17,7 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	calculator.RegisterSumServiceServer(s, &server{})
-
+	
+	calculator.RegisterCalculatorServiceServer(s, &server{})
 	
 }
