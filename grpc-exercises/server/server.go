@@ -18,6 +18,4 @@ func main() {
 
 	s := grpc.NewServer()
 	
-	calculator.RegisterCalculatorServiceServer(s, &server{})
-	
 }
