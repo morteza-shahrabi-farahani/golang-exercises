@@ -1,11 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
-
-	"github.com/morteza-shahrabi-farahani/golang-exercises/grpc-excercises/proto"
-	"google.golang.org/grpc"
 )
 
 type server struct{}
@@ -16,6 +14,6 @@ func main() {
 		log.Fatalln("Failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer()
-	
+	fmt.Println(lis)
+	// calculator.RegisterCalculatorServiceServer(s, &server{})
 }
