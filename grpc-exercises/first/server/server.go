@@ -11,6 +11,7 @@ import (
 
 type server struct{
 	calculator.UnsafeCalculatorServiceServer
+	// calculator.UnimplementedCalculatorServiceServer
 }
 
 func (*server) Sum(ctx context.Context, req *calculator.SumRequest) (*calculator.SumResponse, error) {
