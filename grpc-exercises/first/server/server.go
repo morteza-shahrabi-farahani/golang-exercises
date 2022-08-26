@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net"
+	"time"
 
 	calculator "github.com/morteza-shahrabi-farahani/golang-exercises/grpc-exercises/first/proto/api"
 	"google.golang.org/grpc"
@@ -22,6 +23,24 @@ func (*server) Sum(ctx context.Context, req *calculator.SumRequest) (*calculator
 	}
 
 	return result, nil
+}
+
+func (*server) PrimeNumberDecomposition(req *calculator.PrimeNumberDecompositionRequest, stream calculator.CalculatorService_PrimeNumberDecompositionServer) error {
+	input := int(req.GetInput())
+	for i := 2; i < input; i++ {
+		if input % i == 0 {
+			result := &calculator.PrimeNumberDecompositionResponse{
+				Result: int32(i),
+			}
+
+			stream.Send(result)
+			input /= i
+			i--
+			time.Sleep(1 * time.Second)
+		}
+	}
+
+	return nil
 }
 
 func main() {

@@ -23,5 +23,5 @@ message PrimeNumberDecompositionResponse {
 
 service CalculatorService {
     rpc Sum(SumRequest) returns (SumResponse) {};
-    rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) returns (PrimeNumberDecompositionResponse) {};
+    rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) returns (stream PrimeNumberDecompositionResponse) {};
 }

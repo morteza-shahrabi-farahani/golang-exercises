@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CalculatorServiceClient interface {
 	Sum(ctx context.Context, in *SumRequest, opts ...grpc.CallOption) (*SumResponse, error)
-	PrimeNumberDecomposition(ctx context.Context, in *PrimeNumberDecompositionRequest, opts ...grpc.CallOption) (*PrimeNumberDecompositionResponse, error)
+	PrimeNumberDecomposition(ctx context.Context, in *PrimeNumberDecompositionRequest, opts ...grpc.CallOption) (CalculatorService_PrimeNumberDecompositionClient, error)
 }
 
 type calculatorServiceClient struct {
@@ -43,13 +43,36 @@ func (c *calculatorServiceClient) Sum(ctx context.Context, in *SumRequest, opts 
 	return out, nil
 }
 
-func (c *calculatorServiceClient) PrimeNumberDecomposition(ctx context.Context, in *PrimeNumberDecompositionRequest, opts ...grpc.CallOption) (*PrimeNumberDecompositionResponse, error) {
-	out := new(PrimeNumberDecompositionResponse)
-	err := c.cc.Invoke(ctx, "/calculator.CalculatorService/PrimeNumberDecomposition", in, out, opts...)
+func (c *calculatorServiceClient) PrimeNumberDecomposition(ctx context.Context, in *PrimeNumberDecompositionRequest, opts ...grpc.CallOption) (CalculatorService_PrimeNumberDecompositionClient, error) {
+	stream, err := c.cc.NewStream(ctx, &CalculatorService_ServiceDesc.Streams[0], "/calculator.CalculatorService/PrimeNumberDecomposition", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &calculatorServicePrimeNumberDecompositionClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type CalculatorService_PrimeNumberDecompositionClient interface {
+	Recv() (*PrimeNumberDecompositionResponse, error)
+	grpc.ClientStream
+}
+
+type calculatorServicePrimeNumberDecompositionClient struct {
+	grpc.ClientStream
+}
+
+func (x *calculatorServicePrimeNumberDecompositionClient) Recv() (*PrimeNumberDecompositionResponse, error) {
+	m := new(PrimeNumberDecompositionResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // CalculatorServiceServer is the server API for CalculatorService service.
@@ -57,7 +80,7 @@ func (c *calculatorServiceClient) PrimeNumberDecomposition(ctx context.Context, 
 // for forward compatibility
 type CalculatorServiceServer interface {
 	Sum(context.Context, *SumRequest) (*SumResponse, error)
-	PrimeNumberDecomposition(context.Context, *PrimeNumberDecompositionRequest) (*PrimeNumberDecompositionResponse, error)
+	PrimeNumberDecomposition(*PrimeNumberDecompositionRequest, CalculatorService_PrimeNumberDecompositionServer) error
 	mustEmbedUnimplementedCalculatorServiceServer()
 }
 
@@ -68,8 +91,8 @@ type UnimplementedCalculatorServiceServer struct {
 func (UnimplementedCalculatorServiceServer) Sum(context.Context, *SumRequest) (*SumResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Sum not implemented")
 }
-func (UnimplementedCalculatorServiceServer) PrimeNumberDecomposition(context.Context, *PrimeNumberDecompositionRequest) (*PrimeNumberDecompositionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PrimeNumberDecomposition not implemented")
+func (UnimplementedCalculatorServiceServer) PrimeNumberDecomposition(*PrimeNumberDecompositionRequest, CalculatorService_PrimeNumberDecompositionServer) error {
+	return status.Errorf(codes.Unimplemented, "method PrimeNumberDecomposition not implemented")
 }
 func (UnimplementedCalculatorServiceServer) mustEmbedUnimplementedCalculatorServiceServer() {}
 
@@ -102,22 +125,25 @@ func _CalculatorService_Sum_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CalculatorService_PrimeNumberDecomposition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PrimeNumberDecompositionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _CalculatorService_PrimeNumberDecomposition_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PrimeNumberDecompositionRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(CalculatorServiceServer).PrimeNumberDecomposition(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/calculator.CalculatorService/PrimeNumberDecomposition",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CalculatorServiceServer).PrimeNumberDecomposition(ctx, req.(*PrimeNumberDecompositionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(CalculatorServiceServer).PrimeNumberDecomposition(m, &calculatorServicePrimeNumberDecompositionServer{stream})
+}
+
+type CalculatorService_PrimeNumberDecompositionServer interface {
+	Send(*PrimeNumberDecompositionResponse) error
+	grpc.ServerStream
+}
+
+type calculatorServicePrimeNumberDecompositionServer struct {
+	grpc.ServerStream
+}
+
+func (x *calculatorServicePrimeNumberDecompositionServer) Send(m *PrimeNumberDecompositionResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 // CalculatorService_ServiceDesc is the grpc.ServiceDesc for CalculatorService service.
@@ -131,11 +157,13 @@ var CalculatorService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Sum",
 			Handler:    _CalculatorService_Sum_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "PrimeNumberDecomposition",
-			Handler:    _CalculatorService_PrimeNumberDecomposition_Handler,
+			StreamName:    "PrimeNumberDecomposition",
+			Handler:       _CalculatorService_PrimeNumberDecomposition_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "proto/calculator.proto",
 }
