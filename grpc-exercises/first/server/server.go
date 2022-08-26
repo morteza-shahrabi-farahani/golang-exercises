@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"time"
@@ -27,13 +28,14 @@ func (*server) Sum(ctx context.Context, req *calculator.SumRequest) (*calculator
 
 func (*server) PrimeNumberDecomposition(req *calculator.PrimeNumberDecompositionRequest, stream calculator.CalculatorService_PrimeNumberDecompositionServer) error {
 	input := int(req.GetInput())
-	for i := 2; i < input; i++ {
+	for i := 2; i <= input; i++ {
 		if input % i == 0 {
 			result := &calculator.PrimeNumberDecompositionResponse{
 				Result: int32(i),
 			}
 
 			stream.Send(result)
+			fmt.Println(result)
 			input /= i
 			i--
 			time.Sleep(1 * time.Second)
