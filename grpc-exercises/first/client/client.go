@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
+	"time"
 
 	calculator "github.com/morteza-shahrabi-farahani/golang-exercises/grpc-exercises/first/proto/api"
 	"google.golang.org/grpc"
@@ -57,4 +59,54 @@ func doServerStreaming(c calculator.CalculatorServiceClient) {
 
 		fmt.Println("response: ", msg.GetResult())
 	}
+}
+
+func doClientStreaming(c calculator.CalculatorServiceClient) {
+	// stream, err := c.Average(context.Background())
+	// if err != nil {
+	// 	fmt.Println("error while calling Average API")
+	// }
+	// for i := 0; i < 10; i++ {
+	// 	stream.Send(&calculator.AverageRequest{
+	// 		Input: int32(i),
+	// 	})
+	// }
+	// stream.CloseSend()
+	// msg, err := stream.Recv()
+	// if err != nil {
+	// 	fmt.Println("error while receiving data from stream server")
+	// }
+	// fmt.Println("response: ", msg.GetResult())
+
+	requests := []*calculator.AverageRequest{
+		&calculator.AverageRequest{
+			Input: 1,
+		}, 
+		&calculator.AverageRequest{
+			Input: 2,
+		}, 
+		&calculator.AverageRequest{
+			Input: 3,
+		}, 
+		&calculator.AverageRequest{
+			Input: 4,
+		}, 
+	}
+
+	stream, err := c.Average(context.Background())
+	if err != nil {
+		log.Println("error while calling Average API: %v", err)
+	}
+
+	for _, req := range requests {
+		stream.Send(req)
+		time.Sleep(time.Second)
+	}
+
+	resp, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Println("error while receiving data from server: %v", err)
+	}
+
+	fmt.Println("response: ", resp.GetResult())
 }
