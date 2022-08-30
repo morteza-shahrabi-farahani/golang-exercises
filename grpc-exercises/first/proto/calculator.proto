@@ -21,7 +21,16 @@ message PrimeNumberDecompositionResponse {
     int32 result = 1;
 }
 
+message AverageRequest {
+    int32 input = 1;
+}
+
+message AverageResponse {
+    float result = 1;
+}
+
 service CalculatorService {
     rpc Sum(SumRequest) returns (SumResponse) {};
     rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) returns (stream PrimeNumberDecompositionResponse) {};
+    rpc Average(stream AverageRequest) returns (AverageResponse) {};
 }
