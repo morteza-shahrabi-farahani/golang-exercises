@@ -69,6 +69,34 @@ func (*server) Average(stream calculator.CalculatorService_AverageServer) error 
 	}
 }
 
+func (*server) Maximum(stream calculator.CalculatorService_MaximumServer) error {
+	var max int32
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+
+		if err != nil {
+			log.Fatalf("Error while reading client stream: %v", err)
+		}
+
+		input := req.GetInput()
+		if input > max {
+			max = input
+		}
+
+		sendErr := stream.Send(&calculator.MaximumResponse{
+			Result: max,
+		})
+		if sendErr != nil {
+			log.Fatalf("Error while sending data to client: %v", sendErr)
+			return sendErr
+		}
+	}
+}
+
+
 func main() {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
