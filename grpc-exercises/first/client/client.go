@@ -20,8 +20,10 @@ func main() {
 
 	c := calculator.NewCalculatorServiceClient(cc)
 
-	doUnary(c)
-	doServerStreaming(c)
+	// doUnary(c)
+	// doServerStreaming(c)
+	// doClientStreaming(c)
+	doBiDirectionalStreaming(c)
 }
 
 func doUnary(c calculator.CalculatorServiceClient) {
@@ -62,22 +64,6 @@ func doServerStreaming(c calculator.CalculatorServiceClient) {
 }
 
 func doClientStreaming(c calculator.CalculatorServiceClient) {
-	// stream, err := c.Average(context.Background())
-	// if err != nil {
-	// 	fmt.Println("error while calling Average API")
-	// }
-	// for i := 0; i < 10; i++ {
-	// 	stream.Send(&calculator.AverageRequest{
-	// 		Input: int32(i),
-	// 	})
-	// }
-	// stream.CloseSend()
-	// msg, err := stream.Recv()
-	// if err != nil {
-	// 	fmt.Println("error while receiving data from stream server")
-	// }
-	// fmt.Println("response: ", msg.GetResult())
-
 	requests := []*calculator.AverageRequest{
 		&calculator.AverageRequest{
 			Input: 1,
@@ -109,4 +95,69 @@ func doClientStreaming(c calculator.CalculatorServiceClient) {
 	}
 
 	fmt.Println("response: ", resp.GetResult())
+}
+
+func doBiDirectionalStreaming(c calculator.CalculatorServiceClient) {
+	requests := []*calculator.MaximumRequest {
+		&calculator.MaximumRequest{
+			Input: 1,
+		},
+		&calculator.MaximumRequest{
+			Input: 2,
+		},
+		&calculator.MaximumRequest{
+			Input: 3,
+		},
+		&calculator.MaximumRequest{
+			Input: 1,
+		},
+		&calculator.MaximumRequest{
+			Input: 10,
+		},
+		&calculator.MaximumRequest{
+			Input: 5,
+		},
+		&calculator.MaximumRequest{
+			Input: 7,
+		},
+	}
+
+	stream, err := c.Maximum(context.Background())
+	if err != nil {
+		log.Println("error while calling Maximum rpc: %v", err)
+	}
+
+	waitc := make(chan struct{})
+
+	go func() {
+		// function to send a bunch of messages to the server (go routine)
+		for _, req := range requests {
+			fmt.Println("sending messages: ")
+			stream.Send(req)
+			time.Sleep(1000 * time.Millisecond)
+		}
+		stream.CloseSend()
+	}()
+
+	go func() {
+		// function to receive a bunch of messages
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("error while receiving: %v", err)
+				break
+			}
+
+			fmt.Println("received: ", res.GetResult())
+		}
+		
+		close(waitc)
+	}()
+
+	// block until everything is done
+	<-waitc
+
 }
