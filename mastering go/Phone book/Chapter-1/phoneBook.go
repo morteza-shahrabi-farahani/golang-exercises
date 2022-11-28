@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path"
 )
 
 type Entry struct {
@@ -36,8 +35,7 @@ func list() ([]Entry, error) {
 func main() {
 	arguments := os.Args
 	if len(arguments) == 1 {
-		exe := path.Base(arguments[0])
-		fmt.Printf("Usage: %s search|list <arguments>\n", exe)
+		fmt.Println("Please enter required arguments!!")
 		return
 	}
 
@@ -66,7 +64,7 @@ func main() {
 				fmt.Println(err)
 				return
 			}
-			
+
 			fmt.Println(userList)
 
 		default:
