@@ -76,6 +76,23 @@ The go run command builds the named Go package, which in this case is the main p
 
 `go run hw.go`
 
+\* Go offers standard tooling (gofmt) that can format your code for you so you never have to think about it.
+
+\* Go requires the use of semicolons as statement terminators in many contexts, and the compiler automatically inserts the required semicolons when it thinks that they are necessary.
+
+#### Some differences between short assignment statement and var:
+the var keyword is mostly used for declaring global or local variables without an initial value. The reason for the former is that every statement that exists outside of the code of a function must begin with a keyword such as func or var. This means that the short assignment statement cannot be used outside of a function environment because it is not available there. Last, you might need to use var when you want to be explicit about the data type. For example, when you want int8 or
+int32 instead of int.
+
+\* If no initial value is given to a variable, the Go compiler will automatically initialize that variable to the zero value of its data type.
+
+#### Implicit and explicit data and type conversions:
+Implicit Type Conversion Also known as ‘automatic type conversion’. Done by the compiler on its own, without any external trigger from the user. Example, converting int to float.
+Go does not allow implicit data conversion.
+
+<br>
+Explicit also called type casting and it is user-defined. Here the user can typecast the result to make it of a particular data type. For example converting int to String or converting float to int.
+
 
 
 
