@@ -118,6 +118,18 @@ The second one gives you more flexibility but requires more thinking when readin
 
 \* By default, command-line arguments in Go are stored in the os.Args slice.
 
+## Understanding the Go concurrency model
+
+A goroutine is the smallest executable Go entity. 
+
+A channel in Go is a mechanism that, among other things, allows goroutins to communicate and exchange data.
+
+As main() runs as a goroutine as well, you do not want main() to finish before the other goroutines of the program because when main() exits, the entire program along with any goroutines that have not finished yet will terminate. 
+
+goroutines are initialized in random order and start running in random order. The Go scheduler is responsible for the execution of goroutines just like th OS scheduler is responsible for the execution of the OS threads.
+
+
+
 
 
 
