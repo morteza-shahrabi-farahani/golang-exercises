@@ -94,6 +94,8 @@ Go does not allow implicit data conversion.
 Explicit also called type casting and it is user-defined. Here the user can typecast the result to make it of a particular data type. For example converting int to String or converting float to int.
 
 
+// Test
+
 
 
 
