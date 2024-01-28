@@ -21,7 +21,7 @@ With Brian Kernighan, he is the co-author of The Practice of Programming and The
 <br>
 Although the official name of the language is Go, it is sometimes wrongly referred to as Golang.The official reason for this is that og.org was not available for registrationand golang.org was chosen instead. And the practical reason for this is that when you are querying a search engine for Go, the word Go is usually interpreted as a verb.<br><br>
 
-### Why Go is good?
+## Why Go is good?
 There are many things that Go does better than other programming languages, including the following:
 
 **Lack of verbosity**: Go uses fewer parentheses than C, C++, or Java, and no semicolons, which makes the look of Go source code more human-readable and less errorprone.<br>
@@ -62,11 +62,11 @@ starts a web server.
 
 `godoc -http:8001`
 
-### Hello world
+## Hello world
 
 The import keyword allows you to include functionality of the packages that belong to the standard Go library (os). Packages that are not part of the standard Go library are imported using their full internet path (github.com/spf13/cobra). Go programs are organized in packages - even the smallest Go  program should be deliveered as a package. 
 
-#### Differences between go build and go run
+### Differences between go build and go run
 In order to compile Go code and create a binary executable file, you need to use the go build command. What go build does is create an executable file for you to distribute and execute manually. This means that the go build command requires an additional step for running your code.
 go build supports the -o option, which allows you to change the filename and the path of the generated executable file.
 
@@ -80,21 +80,45 @@ The go run command builds the named Go package, which in this case is the main p
 
 \* Go requires the use of semicolons as statement terminators in many contexts, and the compiler automatically inserts the required semicolons when it thinks that they are necessary.
 
-#### Some differences between short assignment statement and var:
+### Some differences between short assignment statement and var:
 the var keyword is mostly used for declaring global or local variables without an initial value. The reason for the former is that every statement that exists outside of the code of a function must begin with a keyword such as func or var. This means that the short assignment statement cannot be used outside of a function environment because it is not available there. Last, you might need to use var when you want to be explicit about the data type. For example, when you want int8 or
 int32 instead of int.
 
 \* If no initial value is given to a variable, the Go compiler will automatically initialize that variable to the zero value of its data type.
 
-#### Implicit and explicit data and type conversions:
+### Implicit and explicit data and type conversions:
 Implicit Type Conversion Also known as ‘automatic type conversion’. Done by the compiler on its own, without any external trigger from the user. Example, converting int to float.
 Go does not allow implicit data conversion.
 
 <br>
 Explicit also called type casting and it is user-defined. Here the user can typecast the result to make it of a particular data type. For example converting int to String or converting float to int.
 
+### Switch
+The order of the case statements  important because only the first match is executed. The fallthrough keyword tells Go that after this branch is executed, it will continue with the next branch, which in this case is the default branch.
 
-// Test
+two kind of switch we have in Go
+
+1. switch argument {<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  case "0": <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // doing something <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case "1": <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // doing something else <br>
+}
+
+2. switch { <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case value == 0: <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fmt.Println("Zero) <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case value > 1: <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fmt.Println("Bigger than One")<br>
+}
+
+The second one gives you more flexibility but requires more thinking when reading the code. 
+
+\* Range, which returns two ordered values: the index of the current element in the slice and its value. If you want to ignore either of these return values, which is not the case here, you can use _ in the place of the value that you want to ignore.
+
+\* By default, command-line arguments in Go are stored in the os.Args slice.
+
+
 
 
 
