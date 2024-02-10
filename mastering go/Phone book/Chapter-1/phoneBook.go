@@ -7,9 +7,9 @@ import (
 )
 
 type Entry struct {
-	Name 		string
-	Surname 	string
-	Telephone 	string
+	Name      string
+	Surname   string
+	Telephone string
 }
 
 var data = []Entry{}
@@ -44,30 +44,30 @@ func main() {
 	data = append(data, Entry{"John", "Black", "2109416123"})
 
 	switch arguments[1] {
-		case "search":
-			if len(arguments) != 3 {
-				fmt.Println("Please provide a search term")
-				return
-			}
+	case "search":
+		if len(arguments) != 3 {
+			fmt.Println("Please provide a search term")
+			return
+		}
 
-			result, err := search(arguments[2])
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
+		result, err := search(arguments[2])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-			fmt.Println(result)
+		fmt.Println(result)
 
-		case "list":
-			userList, err := list()
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
+	case "list":
+		userList, err := list()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-			fmt.Println(userList)
+		fmt.Println(userList)
 
-		default:
-			fmt.Println("not valid option")
+	default:
+		fmt.Println("not valid option")
 	}
 }
