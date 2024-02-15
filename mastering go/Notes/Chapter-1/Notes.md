@@ -128,6 +128,32 @@ As main() runs as a goroutine as well, you do not want main() to finish before t
 
 goroutines are initialized in random order and start running in random order. The Go scheduler is responsible for the execution of goroutines just like th OS scheduler is responsible for the execution of the OS threads.
 
+## Logging Information
+
+You can read about good and best practices for logging in a software in https://12factor.net/logs. Additionally, in clouad native applications, we are encouraged to simply log to stderr and let the container system redirect the stderr stream to the desired destination.
+
+The UNIX logging service has support for two properties named logging level and logging facility. The logging level is a value that specifies the severity of the log entry. There are various logging levels, including debug, info, notice, warning, err, crit, alert, and emerg, in reverse order of severity. 
+
+The logging facility is like a category used for logging information. The value of the logging facility part can be one of auth, authpriv, cron, daemon, kern, lpr, mail, mark, news, syslog, user, UUCP, local0, local1, local2, local3, local4, local5, local6, or local7 and is defined inside /etc/syslog.conf, /etc/rsyslog.conf, or another appropriate file depending 
+on the server process used for system logging on your UNIX machine. This means that if a logging facility is not defined correctly, it will not be handled; therefore, the log messages you send to it might get ignored and therefore lost.
+
+### Log.Fatal() and log.Panic()
+The log.Fatal() function is used when something erroneous has happened and you just want to exit your program as soon as possible after reporting that bad situation. The call to log.Fatal() terminates a Go program at the point where log.Fatal() was called after printing an error message. In most cases, this custom error message can be Not enough arguments, Cannot access file, or similar.
+
+There are situations where a program is about to fail for good and you want to have as much information about the failure as possible—log.Panic() implies that 
+something really unexpected and unknown, such as not being able to find a file that was previously accessed or not having enough disk space, has happened. Analogous to the log.Fatal() function, log.Panic() prints a custom message and immediately terminates the Go program.
+
+Have in mind that log.Panic() is equivalent to a call to log.Print() followed by a call to panic(). panic() is a built-in function that stops the execution of the 
+current function and begins panicking. After that, it returns to the caller function. On the other hand, log.Fatal() calls log.Print() and then os.Exit(1), which is an immediate way of terminating the current program.
+
+\* The defer keyword tells Go to execute the statement just beffore the current function returns. If we have defer before panic, the defer is executed and then panic happened.
+
+## Overview of Go Generics
+
+The main idea begind generics in Go, is not having to write special code for supporting multiple data types when performing the same task.
+
+Using empty interface and reflection in function for supporting multiple data types needs writing lots of code and implement lots of functions and methods for supporting multiple custom data types. Generics comes into play for providing an alternative to the use of interfaces and reflection for supporting multiple data types. 
+
 
 
 
