@@ -56,3 +56,28 @@ For example if you want to parse the 30 January 2020, you should use 02 January 
 \* The formatting strings can be also used for printing dates and times in the desired format. So in order to print the current date in the 01-02-2006 format, you should use time.Now().Format("01-02-2006")
 
 \* If a command-line argument such as 14 December 2020 contains space characters, you should put it in double quotes for the UNIX shell to treat it as a single command-line argument. Running go run dates.go 14 December 2020 does not work.
+
+\* Use this command to convert time to different time zones and locations. <br>
+```
+// now is a time variable
+loc, _ := time.LoadLocation("Local")
+fmt.Printf("Current Location: %s\n", now.In(loc))
+```
+
+## Go constants
+The value of a constant variable is defined at compile time, not at runtime, this means that it is included in the binary executable. The value of constant variables cannot be changed. Their can be either global or local variables. However, usually they used as global variables.
+
+### The constant generator iota
+The constant generator iota is used for declaring a sequence of related values that use incrementing numbers without the need to explicitly type each one of them. 
+
+```
+const (
+    Zero = iota // 0
+    One         // 1
+    Two         // 2
+    Three       // 3
+)
+```
+
+\* Using underscore character in a const block with a constant generator iota, allows you to skip unwanted values.
+
