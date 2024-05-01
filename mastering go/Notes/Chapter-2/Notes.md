@@ -92,8 +92,30 @@ When defining an array variable, you must define its size. Otherwise, you should
 \* When you pass an array to a function, what is happening is that Go creates a copy of that array and passes that copy to that function - therefore any changes you make to an array in side a function are lost when the function returnes. 
 As a result, arrays in Go are not very powerful, which is the main reason that Go has introduced an additional data structure named slice that is similar to an array but is dynamic in nature.
 
+How arrays are stored in Go? <br>
+Go arrays are laid out contigously in memory. Then since Go types are statically sized, the address of the nth item is equal to the address of the 0th element plus a byte offset equal to the size of the type of the item.
+
+Go's arrays are values. An array variable denotes the entire array; it is not a pointer to the first array element (as would be the case in C). This means that when you assign or pass around an array value you will make a copy of its contents.
+
 ### Slices
 Slices in Go are more powerful than arrays mainly because they are dynamic, which means that they can grow or shrink after creation if needed. Additionally, any changes you make to a slice inside a function also affect the original slice. But how does this happen? Strictly speaking, all parameters in Go are passed by value - there is no other way to pass parameters in Go.
 
-In reality, a slice value is a header that contains a pointer to an underlying array where the elements are actually stored, the length of the array, and its capacity.
+In reality, a slice value is a header that contains a pointer to an underlying array where the elements are actually stored, the length of the array, and its capacity. Nota that the slice value does not include its elements, just a pointer to the underlying array. So, when you pass a slice to a function, Go makes a copy of that header and passes it to the function. This copy of the slice header includes the pointer to the underlying array. The slice header is defined in the reflect package as follows:
+
+```
+type SliceHeader struct {
+    Data uintptr
+    Len int
+    Cap int
+}
+```
+
+You can create a slice using make() or like an array without specifying its size or using [...]. If you do not want to initialize a slice, then using make() is better and faster.
+
+```
+aSlice := []float64{1.2, 3.2, -4.5}
+aSlice := make([]float64, 3) \* Each element of this slice has a value of 0, which is the zero value of the float64 data type. *\
+
+bSlice := make([][]int, 2) \* This returns a slice with two dimensions where the first dimension is 2 (rows) and the second dimension (columns) is unspecified and should be explicitly specified when adding data to it. *\
+```
 
