@@ -81,3 +81,19 @@ const (
 
 \* Using underscore character in a const block with a constant generator iota, allows you to skip unwanted values.
 
+## Grouping similar data
+You can use slices instead of arrays almost anywhere in Go but we are also demonstrating arrays because they can still be useful and because slices are implemented by Go using arrays!
+
+### Arrays
+When defining an array variable, you must define its size. Otherwise, you should put [...] in the array declaration and let the Go compiler find out the length for you. So you can create an array with 4 string elements either as [4]string{"Zero", "One", "Two", "Three"} or as [...]string{"Zero", "One", "Two", "Three"}. If you put nothing in the square brackets, then a slice is going to be created instead. <br>
+
+\* You cannot change the size of an array after you have created it. <br> 
+
+\* When you pass an array to a function, what is happening is that Go creates a copy of that array and passes that copy to that function - therefore any changes you make to an array in side a function are lost when the function returnes. 
+As a result, arrays in Go are not very powerful, which is the main reason that Go has introduced an additional data structure named slice that is similar to an array but is dynamic in nature.
+
+### Slices
+Slices in Go are more powerful than arrays mainly because they are dynamic, which means that they can grow or shrink after creation if needed. Additionally, any changes you make to a slice inside a function also affect the original slice. But how does this happen? Strictly speaking, all parameters in Go are passed by value - there is no other way to pass parameters in Go.
+
+In reality, a slice value is a header that contains a pointer to an underlying array where the elements are actually stored, the length of the array, and its capacity.
+
