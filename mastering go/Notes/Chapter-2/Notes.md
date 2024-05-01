@@ -114,8 +114,26 @@ You can create a slice using make() or like an array without specifying its size
 
 ```
 aSlice := []float64{1.2, 3.2, -4.5}
-aSlice := make([]float64, 3) \* Each element of this slice has a value of 0, which is the zero value of the float64 data type. *\
+aSlice := make([]float64, 3) 
+\* Each element of this slice has a value of 0, which is the zero value of the float64 data type. *\
 
-bSlice := make([][]int, 2) \* This returns a slice with two dimensions where the first dimension is 2 (rows) and the second dimension (columns) is unspecified and should be explicitly specified when adding data to it. *\
+bSlice := make([][]int, 2) 
+\* This returns a slice with two dimensions where the first dimension is 2 (rows) and the second dimension (columns) is unspecified and should be explicitly specified when adding data to it. *\
+
+twoD := [][]int{{1, 2, 3}, {4, 5, 6}}.
 ```
+
+You can add new elements to a full slice using the append() function. append() automatically allocates the required memory space.
+
+#### Capacity
+The capacity shows how much a slice can be expanded without the need to allocate more memory and change the underlying array. The first argument of make() is the type of the slice and its dimensions, the second is its initial length and the third, which is optional, is the capacity of the slice. Although the data type of a slice cannot change after creation, the other two properties can change.
+
+how changing the capacity works in Go by a picture. When you add a new element to a full capacity slice, its capacity will be doubled.
+![Local Image](./How%20capacity%20works%20in%20slices.jpeg "how capacity works in slices")
+
+\* aSlice = append(aSlice, []int{-1, -2, -3, -4}...) <br>
+The ... operator expands []int{-1, -2, -3, -4} into multiple arguments and
+append() appends each argument one by one to aSlice.
+
+\* Setting the correct capacity of a slice, if known in advance, will make your programs faster because Go will not have to allocate a new underlying array and have all the data copied over.
 
