@@ -137,3 +137,29 @@ append() appends each argument one by one to aSlice.
 
 \* Setting the correct capacity of a slice, if known in advance, will make your programs faster because Go will not have to allocate a new underlying array and have all the data copied over.
 
+#### Selecting a part of a slice
+There is a variation where you can add a third parameter that controls the capacity of the resulting slice. So, using aSlice[0:2:4] selects the first 2 elements of a slice and creates a new slice with a maximum capacity of 4. The resulting capacity is defined as the result of the 4 - 0 subtraction where 4 is the maximum capacity and 0 is the first index. 
+
+\* Selecting last 2 elements of slice <br>
+```
+aSlice[len(aSlice)-2:]
+```
+
+#### Byte slices
+bytes are a universal unit among computer systems.<br>
+As Go does not have a char data type, it uses byte and rune for storing character values. A single byte can only store a single ASCII character whereas a rune can store Unicode characters. However, a rune can occupy multiple bytes.
+
+\* Convert string to a byte slice<br>
+```
+b = []byte("Byte slice $")
+```
+In this case, if you print b, you will get an array of integers which are values of each byte. <br>
+As Unicode characters like $ need more than one byte for their representation, the length of the byte slice might not be the same as the length of the string that is stores. Although the b byte slice has 12 characters, it has a size of 14!!
+
+You can print the text of array of the byte with these commands.
+```
+fmt.Printf("Byte slice as text: %s\n", b)
+fmt.Println("Byte slice as text:", string(b))
+```
+
+
