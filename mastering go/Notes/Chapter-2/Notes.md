@@ -162,4 +162,61 @@ fmt.Printf("Byte slice as text: %s\n", b)
 fmt.Println("Byte slice as text:", string(b))
 ```
 
+#### Deleting an element from a slice
+```
+aSlice = append(aSlice[:i], aSlice[i+1:]...)
+```
+Here we logically divide the original slice into two slices. The two slices are split at the index of the element that needs to be deleted. After that, we concatenate these two slices with the help of ...
+
+#### How slices are connected to arrays
+As mentioned before, behind the scenes, each slice is implemented using an underlying array. The length of the underlying array is the same as the capacity of the slice and there exist pointers that connect the slice elements to the appropriate array elements. 
+
+You can understand that by connecting an existing array with a slice, Go allows you to reference an array of a part of an array using a slice. This has some strange capabilities including the fact that the changes to the slice affect the referenced array! However, when the capacity of the slice changes, the connection to the array ceases to exist! This happens because when the capacity of a slice changes, so does the underlying array, and the connection between the slice and the original arrya does not exist anymore!
+
+```
+a := [4]string{"Zero", "One", "Two", "Three"}
+fmt.Println("a:", a)
+
+// The result is => a: [Zero, One, Two, Three]
+
+var S0 = a[0:1]
+fmt.Println(S0)
+
+// The result is => [Zero]
+
+var S12 = a[1:3]
+fmt.Println(S12)
+
+// The result is => a: [One, Two]
+
+S0[0] = "S0"
+S12[0] = "S12_0"
+S12[1] = "S12_1"
+
+fmt.Println("a:", a)
+
+// The result is => a: [S0, S12_0, S12_1, Three]
+// The changes in S0 and S12 also change the contents of array. a // has not changedin a direct way. However, due to the connections // of a, the contents of a have changed!
+
+// Adding 4 elements to S0
+S0 = append(S0, "N1")
+S0 = append(S0, "N2")
+S0 = append(S0, "N3")
+a[0] = "-N1"
+
+// Changing the capacity of S0
+// Not the same underlying array any more!
+S0 = append(S0, "N4")
+
+fmt.Println("Capacity of S0:", cap(S0), "Length of S0:", len(S0))
+// The result is => Capacity of S0: 8 Length of S0: 5
+// This change does not go to S0
+a[0] = "-N500-"
+
+fmt.Println("S0:", S0)
+// The result is => S0:[-N1, N1, N2, N3, N4]
+// As the capacity of S0 changes, it is no longer connected to the same underlying array. 
+
+```
+
 
