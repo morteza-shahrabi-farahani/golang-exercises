@@ -261,6 +261,25 @@ fmt.Println("a5", a5)
 // a5 [-1 -2 12 13 14] Now first two elements of 15 changes and other elements, remained the same
 ```
 
+#### Sorting Slices
+
+The sort package can sort slices of built-in data types without the need to write any extra code. <br>
+sort.Ints => sort integers <br>
+sort.Reverse() => sorting in the reverse order than difault.
+
+### Pointers
+
+Go has support for pointers but not for pointer arithmetic, which is the cause of many bugs and errors in programming languages like C. A pointer is the memory address of a variable. You need to dereference a pointer in order to get its value dereferencing is performed using the * character in front of the pointer variable. Additionally, you can get the memory address of a normal variable using an & in front of it.
+
+![Local Image](./Go%20pointers.png "Go pointers")
+
+If a pointer variable points to an existing regular variable, then any changes you make to the stored value using the pointer variable will modify the regular variable.
+
+Pointers are also very handy when you want to tell the difference between the zero value of a variable and a value that is not set (nil). This is particularly useful with structures because pointers can have the nil value, which means that you can compare a pointer to a structure with the nil value, which is not allowed for normal structure variables. 
+
+\* The zero value for pointers is nil. when pointer variable points to nowhere, Go makes it point to nil. However, when we assign it to an empty structure value with new keyword, now this variable is no longer nil but fields of structure have the zero values of their data types.
+
+
 
 
 
