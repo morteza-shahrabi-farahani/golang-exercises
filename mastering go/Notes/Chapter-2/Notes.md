@@ -219,4 +219,48 @@ fmt.Println("S0:", S0)
 
 ```
 
+#### The copy() function
+
+copy(destination, input)
+
+The use of copy() can be tricky because the destination slice is not auto-expanded if the source slice is bigger than the destination slice. Additionally, if the destination slice is bigger than the source slice, then copy() does not empty the elements from the destination slice that did not get copied. 
+
+```
+a1 := []int{1}
+a2 := []int{-1, -2}
+a5 := []int{10, 11, 12, 13, 14}
+fmt.Println("a1", a1)
+fmt.Println("a2", a2)
+fmt.Println("a5", a5)
+// copy(destination, input)
+// len(a2) > len(a1)
+copy(a1, a2)
+fmt.Println("a1", a1)
+fmt.Println("a2", a2)
+
+// The result is 
+// a1 [-1] The first element of a1 is changed
+// a2 [-1 -2]
+
+// len(a5) > len(a1)
+copy(a1, a5)
+fmt.Println("a1", a1)
+fmt.Println("a5", a5)
+
+// The result is
+// a1 [10] same as last scenario
+// a5 [10 11 12 13 14]
+
+// len(a2) < len(a5) -> OK
+copy(a5, a2)
+fmt.Println("a2", a2)
+fmt.Println("a5", a5)
+
+// The result is 
+// a2 [-1 -2]
+// a5 [-1 -2 12 13 14] Now first two elements of 15 changes and other elements, remained the same
+```
+
+
+
 
