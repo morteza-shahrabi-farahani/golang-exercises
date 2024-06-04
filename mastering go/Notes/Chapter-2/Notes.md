@@ -279,6 +279,16 @@ Pointers are also very handy when you want to tell the difference between the ze
 
 \* The zero value for pointers is nil. when pointer variable points to nowhere, Go makes it point to nil. However, when we assign it to an empty structure value with new keyword, now this variable is no longer nil but fields of structure have the zero values of their data types.
 
+### Generating random numbers, strings and secure random numbers
+
+Each random number generator needs a seed to start producing numbers. The seed is used for initializing the entire process and is extremely important because if you always start with the same seed, you will always get the same sequence of pseudo-random numbers. This means that everybody can regenerate that sequence, and that particular sequence will not be random after all.
+
+rand.Intn(max - min) + min => generate random numbers between min and max.
+
+If you intend to use these pseudo-random numbers for security-related work, it is important that you use the crypto/rand package, which implements a cryptographically secure psedu-random number generator.
+
+
+
 
 
 
