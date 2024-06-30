@@ -30,4 +30,15 @@ The order in which you put the fields in the definition of a structure type is s
 
 \* If no initial value is given to a variable, the Go compiler automatically initializes that variable to the zero value of its data type. For structures, this means that a structure variable without an initial value is initialized to the zero values of each one of the data types of its fields.
 
+## Regular expressions and pattern matching
+
+Pattern matching is a technique for searching a string for some set of characters based on a specific search pattern that is based on regular expressions and grammars.
+
+A regular expression is a sequence of characters that defines a search pattern. Every regular expression is compiled into a recognizer by building a generalized transition diagram called a finite automaton. A finite automaton can be either deterministic or nondeterministic. Nondeterministic means that more than one transition out of a state can be posiible for the same input. A recognizer is a program that takes a string x as input and is able to tell whether x is a sentence of a given language. 
+
+A grammar is a set of production rules for string in a formal language - the production rules describe how to create string from the alphabet of the language that are valid according to the syntax of the language. Grammars are the heart of regular expression because without a grammar, you cannot define or use a regular expression. 
+
+![Local Image](./regular%20expressions.jpeg "some common match patterns")
+
+
 
