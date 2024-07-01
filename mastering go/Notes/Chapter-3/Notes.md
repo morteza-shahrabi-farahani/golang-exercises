@@ -40,5 +40,15 @@ A grammar is a set of production rules for string in a formal language - the pro
 
 ![Local Image](./regular%20expressions.jpeg "some common match patterns")
 
+We use the regexp.MustCompile() function to create the regular expression and the Match() function to see whether the given string is a match or not.
+
+The re.Match() method returns true if the given byte slice matches the re regular expression, which is a regexp. Regexp variable, and false.
+
+```
+t := []byte(s)
+re := regexp.MustCompile(`^[A-Z][a-z]*$`)
+return re.Match(t)
+```
+
 
 
