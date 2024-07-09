@@ -50,5 +50,13 @@ re := regexp.MustCompile(`^[A-Z][a-z]*$`)
 return re.Match(t)
 ```
 
+## Working with CSV files
 
+\* We index something that is unique and that we want to access quickly. In the database case, primary keys are unique by default and cannot be present in more than one record.
+
+\* As a rule of thumb, you index a field that is going to be used for seraching. There is not point in creating an index that is not going to be used for querying.
+
+\* Personally, I prefer to explore the various parts of a bigger application by creating smaller programs that when combined implement some or all of the functionality of the bigger program. This helps me understand how the bigger application needs to be implemented. This makes it much easier for me to connect all the dots afterward and develop the final product.
+
+\* For a RESTful server that implements a REST API, the design phase or the dependencies of the program are as important as the development phase itself.
 
