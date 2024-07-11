@@ -24,24 +24,9 @@ func main() {
 	var data = []Entry{}
 
 	arguments := os.Args
-	if len(arguments) == 1 {
-		fmt.Println("Please enter required arguments!!")
+	if err := checkArgumentsLength(arguments); err != nil {
 		return
 	}
-
-	file, err := os.Open(CSVFILE)
-	if err != nil {
-		fmt.Println("File does not exist")
-	}
-	defer file.Close()
-
-	reader := csv.NewReader(file)
-	fileData, err := reader.ReadAll()
-	if err != nil {
-		fmt.Println("error in reading the file")
-	}
-
-	fmt.Println(fileData)
 
 	// Chapter 1 and 2 codes
 	data = append(data, Entry{"Mihalis", "Tsoukalos", "2109416471"})
@@ -65,13 +50,20 @@ func main() {
 		fmt.Println(result)
 
 	case "list":
-		userList, err := list(manipulatedData)
+		usersList, err := readFile(CSVFILE)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		fmt.Println(userList)
+		// For chapter 2
+		// usersList, err := list(manipulatedData)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	return
+		// }
+
+		fmt.Println(usersList)
 
 	default:
 		fmt.Println("not valid option")
@@ -87,12 +79,13 @@ func search(data []Entry, key string) (Entry, error) {
 	return Entry{}, errors.New("not found")
 }
 
-func list(data []Entry) ([]Entry, error) {
-	result := []Entry{}
-	result = append(result, data...)
+// For chapter 2
+// func list(data []Entry) ([]Entry, error) {
+// 	result := []Entry{}
+// 	result = append(result, data...)
 
-	return result, nil
-}
+// 	return result, nil
+// }
 
 func generateRandomString(count int32) string {
 	result := ""
@@ -124,4 +117,38 @@ func manipulateData(dataCount int32, data []Entry) []Entry {
 	}
 
 	return data
+}
+
+func checkArgumentsLength(arguments []string) error {
+	if len(arguments) == 1 {
+		return fmt.Errorf("Please enter required arguments!!")
+	}
+
+	return nil
+}
+
+func readFile(filePath string) ([]Entry, error) {
+	file, err := os.Open(CSVFILE)
+	if err != nil {
+		return nil, fmt.Errorf("File does not exist")
+	}
+
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	fileData, err := reader.ReadAll()
+	if err != nil {
+		return nil, fmt.Errorf("error in reading the file")
+	}
+
+	var data []Entry
+	for _, record := range fileData {
+		data = append(data, Entry{
+			Name:      record[0],
+			Surname:   record[1],
+			Telephone: record[2],
+		})
+	}
+
+	return data, nil
 }
