@@ -2,11 +2,8 @@ package main
 
 import (
 	"encoding/csv"
-	"errors"
 	"fmt"
-	"math/rand"
 	"os"
-	"strconv"
 )
 
 type Entry struct {
@@ -16,23 +13,12 @@ type Entry struct {
 }
 
 const CSVFILE = "../data/data.csv"
-const maxStringLength = 7
-const phoneLength = 11
-const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 func main() {
-	var data = []Entry{}
-
 	arguments := os.Args
 	if err := checkArgumentsLength(arguments); err != nil {
 		return
 	}
-
-	// Chapter 1 and 2 codes
-	data = append(data, Entry{"Mihalis", "Tsoukalos", "2109416471"})
-	data = append(data, Entry{"Mary", "Doe", "2109416871"})
-	data = append(data, Entry{"John", "Black", "2109416123"})
-	manipulatedData := manipulateData(100, data)
 
 	switch arguments[1] {
 	case "search":
@@ -41,7 +27,13 @@ func main() {
 			return
 		}
 
-		result, err := search(manipulatedData, arguments[2])
+		usersList, err := readFile(CSVFILE)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		result, err := serach(usersList, arguments[2])
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -56,67 +48,43 @@ func main() {
 			return
 		}
 
-		// For chapter 2
-		// usersList, err := list(manipulatedData)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// 	return
-		// }
-
 		fmt.Println(usersList)
+
+	case "insert":
+		if err := validateInsert(arguments); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		if err := writeToFile(CSVFILE, &Entry{Name: arguments[2], Surname: arguments[3], Telephone: arguments[4]}); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("successfully inserted")
+
+	case "delete":
+		usersList, err := readFile(CSVFILE)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		if err := validateDelete(arguments); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		if err := deleteAndWrite(CSVFILE, usersList, arguments[2]); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("successfully deleted")
 
 	default:
 		fmt.Println("not valid option")
 	}
-}
-
-func search(data []Entry, key string) (Entry, error) {
-	for _, v := range data {
-		if v.Surname == key {
-			return v, nil
-		}
-	}
-	return Entry{}, errors.New("not found")
-}
-
-// For chapter 2
-// func list(data []Entry) ([]Entry, error) {
-// 	result := []Entry{}
-// 	result = append(result, data...)
-
-// 	return result, nil
-// }
-
-func generateRandomString(count int32) string {
-	result := ""
-	for i := 0; i < int(count); i++ {
-		randomInteger := rand.Intn(len(charset))
-		result += string(charset[randomInteger])
-	}
-
-	return result
-}
-
-func generateRandomPhone(phoneLength int32) string {
-	result := ""
-	for i := 0; i < int(phoneLength); i++ {
-		randomInteger := rand.Intn(10)
-		result += strconv.Itoa(randomInteger)
-	}
-
-	return result
-}
-
-func manipulateData(dataCount int32, data []Entry) []Entry {
-	for i := 0; i < int(dataCount); i++ {
-		data = append(data, Entry{
-			Name:      generateRandomString(maxStringLength),
-			Surname:   generateRandomString(maxStringLength),
-			Telephone: generateRandomPhone(phoneLength),
-		})
-	}
-
-	return data
 }
 
 func checkArgumentsLength(arguments []string) error {
@@ -151,4 +119,77 @@ func readFile(filePath string) ([]Entry, error) {
 	}
 
 	return data, nil
+}
+
+func writeToFile(filePath string, data *Entry) error {
+	file, err := os.OpenFile(CSVFILE, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		return fmt.Errorf("File does not exist")
+	}
+
+	defer file.Close()
+
+	csvWriter := csv.NewWriter(file)
+	temp := []string{data.Name, data.Surname, data.Telephone}
+
+	fmt.Println(temp)
+	err = csvWriter.Write(temp)
+	if err != nil {
+		return err
+	}
+	csvWriter.Flush()
+
+	return nil
+}
+
+func deleteAndWrite(filePath string, data []Entry, userPhone string) error {
+	file, err := os.Create(filePath)
+	if err != nil {
+		return fmt.Errorf("File does not exist")
+	}
+	defer file.Close()
+
+	for index, entry := range data {
+		if entry.Telephone == userPhone {
+			data = append(data[:index], data[index+1:]...)
+			break
+		}
+	}
+
+	csvWriter := csv.NewWriter(file)
+	for _, entry := range data {
+		temp := []string{entry.Name, entry.Surname, entry.Telephone}
+		if err := csvWriter.Write(temp); err != nil {
+			return err
+		}
+	}
+	csvWriter.Flush()
+
+	return nil
+}
+
+func serach(data []Entry, telephone string) (*Entry, error) {
+	for _, entry := range data {
+		if entry.Telephone == telephone {
+			return &entry, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Not found!!")
+}
+
+func validateDelete(arguments []string) error {
+	if len(arguments) != 3 {
+		return fmt.Errorf("not enought arguments for delete")
+	}
+
+	return nil
+}
+
+func validateInsert(arguments []string) error {
+	if len(arguments) != 5 {
+		return fmt.Errorf("not enought arguments for insert")
+	}
+
+	return nil
 }
