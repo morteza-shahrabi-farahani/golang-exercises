@@ -93,3 +93,76 @@ Lastly, interfaces can be used for composition. In practice, this means that you
 Put simply, the previous figure illustrates that because of its definition, satisfying interface ABC requires satisfying InterfaceA, InterfaceB, and InterfaceC. Additionally, any ABC variable can be used instead of an InterfaceA variable, and InterfaceB variable, or an InterfaceC variable because it supports all these three behaviors. Last, only ABC variables can be used where an ABC variable is expected. There is nothing prohibiting you from including additional methods in the definition of the ABC interface if the combination of existing interfaces does not describe the desired behavior accurately.
 
 What you should keep in mind is that there is no need for an interface to be impressive and require the implementation of a large number of methods. In fact, the fewer methods an interface has, the more generic and widely used it can be, which improves its usefulness and therefore its usage.
+
+### The sort.Interface interface
+The sort package contains an interface named sort.Interface that allows you to sort slices according to your needs and your data, provided that you implement sort.Interface for the custom data types stored in your slices.
+
+In order to implement sort.Interface, we need to implement following three methods. Len() int, Less(i, j int) bool, Swap(i, j int)
+
+### The empty interface 
+
+As mentioned before, the empty interface is defined as just interface{} and is already implemented by all data types. Therefore, variables of any data type can be put in the place of a parameter of the empty interface data type. Therefore, a function with an interface{} parameter can accept variables of any data type in this place.
+
+## Type assertions and type switches
+A type assertion is a mechanism for working with the underlying concrete value of an interface. This mainly happens because interfaces are virtual data types without their own values - interfaces just define behavior and do not hold data of their own. 
+
+Type switches use switch blocks for data types and allow you to differentiate between type assertion values, which are data types, and process each data type the way you want. On the other hand, in order to use the empty interface in type switches, you need to use type assertions.
+
+Type assertions user the x.(T) notation, where x is an interface type and T is a type and help you extract the value that is hidden behind the empty interface. For a type assertion to work, x should not be nil and the synamic type of x should be identical to the T type.
+
+```
+func Teststruct(x interface{}) {
+    // type switch
+    switch T := x.(type) {
+    case Secret:
+        fmt.Println("Secret type")
+    case Entry:
+        fmt.Println("Entry type")
+    default:
+        fmt.Printf("Not supported type: %T\n", T)
+    }
+}
+```
+
+Strictly speaking, type assertions allow you to perform this task: <br>
+* Checking whether an interface value keeps a particular type. Checking whether a variable named aVar is of the int type requires the use of the aVar.(int) notation, which returns two values. If successful, it returns the real int value of aVar and true. Otherwise, it returns false as the second value, which means that the type assertion was not successful and that the real value could not be extracted.
+
+As explained, trying to extract the concrete value from an interface using a type assertion can have two outcomes:
+* If you use the correct concrete data type, you get the underlying value without any issues
+* If you use an incorrect concrete data type, your program will panic
+
+```
+func returnNumber() interface{} {
+    return 12
+}
+
+func main() {
+    anInt := returnNumber()
+    number := anInt.(int)
+    number++
+    fmt.Println(number)
+    // => 13
+
+    // The next statement would fail because there
+    // is no type assertion to get the value:
+    // anInt++
+    // The next statement fails but the failure is under
+    // control because of the ok bool variable that tells
+    // whether the type assertion is successful or not
+    value, ok := anInt.(int64)
+    if ok {
+        fmt.Println("Type assertion successful: ", value)
+    } else {
+        fmt.Println("Type assertion failed!")
+    }
+
+    // The next statement is successful but
+    // dangerous because it does not make sure that
+    // the type assertion is successful.
+    // It just happens to be successful
+    i := anInt.(int)
+    fmt.Println("i:", i)
+    // The following will PANIC because anInt is not bool
+    _ = anInt.(bool)
+}
+```
