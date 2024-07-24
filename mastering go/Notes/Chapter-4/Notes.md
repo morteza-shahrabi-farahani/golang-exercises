@@ -166,3 +166,70 @@ func main() {
     _ = anInt.(bool)
 }
 ```
+
+### Example code for using interface in the error data type
+In order to satisfy the error interface you just need to implement the Error() string type method.
+
+```
+type error interface {
+    Error() string
+}
+
+// Implement error interface
+func (e emptyFile) Error() string {
+    return fmt.Sprintf("Ended with io.EOF (%t) but read (%d) bytes",
+    e.Ended, e.Read)
+}
+
+// Check values
+// Here we can give variable of the emptyFile type as an input 
+// variable of this function. Because emptyFile type implements Error() // function and so have the behavior of error type and can be used as an // error variable.
+
+// We cast input variable of the function to emptyFile to detect whether // the variable has emptyFile type or not
+func isFileEmpty(e error) bool {
+    // Type assertion
+    v, ok := e.(emptyFile)
+    if ok {
+        if v.Read == 0 && v.Ended == true {
+        return true
+        }
+    }
+    return false
+}
+```
+
+### Writing your own interfaces
+```
+type Shape2D interface {
+    Perimeter() float64
+}
+```
+This interface has the following properties:
+* It is called Shape2D
+* It requires the implementation of a single method named Perimeter() that returns a float64 value
+
+```
+type circle struct {
+    R float64
+}
+
+func (c circle) Perimeter() float64 {
+    return 2 * math.Pi * c.R
+}
+```
+
+The circle type implements the shape2D interface with the implementation of the Perimeter() type method.
+
+```
+func main() {
+    a := circle{R: 1.5}
+    fmt.Printf("R %.2f -> Perimeter %.3f \n", a.R, a.Perimeter())
+    _, ok := interface{}(a).(Shape2D)
+    if ok {
+        fmt.Println("a is a Shape2D!")
+    }
+}
+```
+
+the interface{}(a).(Shape2D) notation checks whether the a variable satisfies the Sahep2D interface without using its underlying value.
+
