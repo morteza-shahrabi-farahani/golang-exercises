@@ -103,7 +103,7 @@ In order to implement sort.Interface, we need to implement following three metho
 
 As mentioned before, the empty interface is defined as just interface{} and is already implemented by all data types. Therefore, variables of any data type can be put in the place of a parameter of the empty interface data type. Therefore, a function with an interface{} parameter can accept variables of any data type in this place.
 
-## Type assertions and type switches
+### Type assertions and type switches
 A type assertion is a mechanism for working with the underlying concrete value of an interface. This mainly happens because interfaces are virtual data types without their own values - interfaces just define behavior and do not hold data of their own. 
 
 Type switches use switch blocks for data types and allow you to differentiate between type assertion values, which are data types, and process each data type the way you want. On the other hand, in order to use the empty interface in type switches, you need to use type assertions.
@@ -232,4 +232,139 @@ func main() {
 ```
 
 the interface{}(a).(Shape2D) notation checks whether the a variable satisfies the Sahep2D interface without using its underlying value.
+
+\* The fact that Go considers interfaces as data types allows us to create slices with elements that satisfy a fiven interface without getting any error messages. This kind of scenarios can be useful in various cases because it illustrates how to store elements with different data types that all satisfy a common interface on the same slice and how to sort them using sort.Interface. Put simply, the presented utlity sorts different structures with different numbers and names of fields that all share a common behavior through an interface implementation.
+
+## Object-oriented programming in Go
+As Go does not supporty all object-oriented features, it cannot replace an object-oriented programming language fully. However, it can mimic some object-oriented concepts.
+
+OOP is a programming paradigm that relies on the concept of objects, which are instances of classes. A class is a blueprint for creating objects, which contain attributes and methods. OOP also emphasizes the concepts of encapsulation, abstraction, inheritance, and polymorphism.
+
+Encapsulation refers to the idea of hiding the implementation details of an object from the outside world. Abstraction refers to the idea of focusing on the essential features of an object while hiding the non-essential features. Inheritance refers to the idea of creating a new class based on an existing class, inheriting its attributes and methods. Polymorphism refers to the idea of using the same interface to represent different types of objects.
+
+### OOP in Go
+First of all, a Go structure with its type methods is like an object with its methods. Second, interfaces are like abstract data types that define behaviors and objects of the same class, which is similar to polymorphism. Third, Go supports encapsulation, which means it supports hiding data and functions from the user by making them private to the structure and the current Go package. Lastly, coomfining interfaces and structures is like composition in object-oriented terminology.
+
+#### Encapsulation
+Encapsulation in Go is impelmented using this rule that the fields and methods with lowercase starting letter, are like private fields and cannot be accessed outer the package. 
+
+```
+// Define a struct with unexported fields
+type Person struct {
+    firstName string
+    lastName  string
+}
+
+// Method to set the first name
+func (p *Person) SetFirstName(name string) {
+    p.firstName = name
+}
+
+// Method to get the first name
+func (p *Person) GetFirstName() string {
+    return p.firstName
+}
+
+func main() {
+    p := Person{}
+    p.SetFirstName("John")
+    fmt.Println(p.GetFirstName())
+}
+```
+
+#### Abstraction
+Abstraction in Go is primarily achieved using interfaces. Interfaces define a set of methods that a type must implement, without specifying how these methods should be implemented.
+
+```
+// Define an interface
+type Speaker interface {
+    Speak()
+}
+
+// Implement the interface
+type Dog struct {
+    Name string
+}
+
+func (d Dog) Speak() {
+    fmt.Println("Woof!")
+}
+
+type Cat struct {
+    Name string
+}
+
+func (c Cat) Speak() {
+    fmt.Println("Meow!")
+}
+
+func main() {
+    var s Speaker
+
+    d := Dog{Name: "Buddy"}
+    c := Cat{Name: "Whiskers"}
+
+    s = d
+    s.Speak() // Output: Woof!
+
+    s = c
+    s.Speak() // Output: Meow!
+}
+```
+
+#### Polymorphism
+Polymorphism in Go is achieved through interfaces. A variable of an interface type can hold a value of any type that implements the interface, allowing functions to operate on different types through a common interface.
+
+```
+type Speaker interface {
+    Speak()
+}
+
+type Dog struct{}
+func (d Dog) Speak() {
+    fmt.Println("Woof!")
+}
+
+type Cat struct{}
+func (c Cat) Speak() {
+    fmt.Println("Meow!")
+}
+
+func MakeSpeak(s Speaker) {
+    s.Speak()
+}
+
+func main() {
+    d := Dog{}
+    c := Cat{}
+
+    MakeSpeak(d) // Output: Woof!
+    MakeSpeak(c) // Output: Meow!
+}
+```
+
+#### Composition (instead of inheritance)
+Go uses composition to achieve code reuse. By embedding structs within other structs, Go enables the inclusion of functionality from one type into another.
+
+```
+type Animal struct {
+    Name string
+}
+
+func (a Animal) Speak() {
+    fmt.Println("Some sound")
+}
+
+type Dog struct {
+    Animal // Embedding Animal struct
+}
+
+func main() {
+    d := Dog{Animal{Name: "Buddy"}}
+    fmt.Println(d.Name) // Accessing the embedded struct's field
+    d.Speak()           // Accessing the embedded struct's method
+}
+```
+
+In conclusion, Go’s approach to OOP is based on composition, interfaces, and structs. Go does not support traditional concepts of OOP such as inheritance and classes, but rather replaces them with composition and interfaces. Go’s approach to OOP is more flexible and modular, allowing for greater reuse of code and reducing code duplication.
 
