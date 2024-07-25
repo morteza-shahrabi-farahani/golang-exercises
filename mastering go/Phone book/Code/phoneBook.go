@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"sort"
 )
 
 type Entry struct {
@@ -11,6 +12,8 @@ type Entry struct {
 	Surname   string
 	Telephone string
 }
+
+type PhoneBook []Entry
 
 const CSVFILE = "../data/data.csv"
 
@@ -118,6 +121,8 @@ func readFile(filePath string) ([]Entry, error) {
 		})
 	}
 
+	sort.Sort(PhoneBook(data))
+
 	return data, nil
 }
 
@@ -192,4 +197,20 @@ func validateInsert(arguments []string) error {
 	}
 
 	return nil
+}
+
+func (phoneBook PhoneBook) Len() int {
+	return len(phoneBook)
+}
+
+func (phoneBook PhoneBook) Less(i, j int) bool {
+	if phoneBook[i].Surname == phoneBook[j].Surname {
+		return phoneBook[i].Name < phoneBook[j].Name
+	}
+
+	return phoneBook[i].Surname < phoneBook[j].Surname
+}
+
+func (phoneBook PhoneBook) Swap(i, j int) {
+	phoneBook[i], phoneBook[j] = phoneBook[j], phoneBook[i]
 }
