@@ -95,3 +95,55 @@ s := []float64{1.1, 2.12, 3.14}
 sum = addFloats("Adding numbers...", s...)
 ```
 
+### The defer keyword
+
+The defer keyword postpones the execution of a function until the surrounding function returns. 
+
+Usually, defer is used in file I/O operations to keep the function call that closes and opened file close to the call that opened it, so that you do not have to remember to close a file that you have opened just before the function exists.
+
+Deferred functions are executed in last in, first out(LIFO) order after the surrounding function has been returned.
+
+## Developing your own packages
+
+It is a best practice to use lowercase package names, even through uppercase package names are allowed. 
+
+Compiling a Go package can be done manually, if the package exists on the local machine, but it is also done automatically after you download the package from the internet. If the package you are downloading contains any errors, you will learn about them at downloading time.
+
+### The init() function
+Each Go package con optionally have a private function named init() that is automatically executed at the beginning of execution time.
+
+* init() takes no arguments.
+* init() returns no values.
+* The init() function is called implicitly by Go.
+* All init() functions are always executed prior to the main() function.
+* A source file can contain multiple init() functions - these are executed in the order of declaration.
+* Go packages can contain multiple files. Each source file can contain one or more init() functions.
+
+init() function is a private function by design and it cannot be called from outside the package in which it is contained. Additionally, as the user of a package has no control over the init() function, you should think carefully before using an init() function in publich packages or changing any global state in init().
+
+There are some situations where the use of init() makes sense:
+
+* For initializing network connections that might take time prior to the execution of package functions or methods.
+
+* For initializing connections to one or more servers prior to the execution of package functions or methods. 
+
+* For creating required files and directories. 
+
+* For checking whether required resources are available or not.
+
+### Order of execution
+If a main package imports package A and package A depends on package B, then the following will take place:
+* The process starts with main package
+* The main package imports package A
+* Package A imports package B
+* The global variables, if any, in package B are initialized.
+* The init() function or functions of package B, if they exist, run. This is the first init() function that gets executed.
+* The global variables, if any, in package A are initialized.
+* The init() function or functions of package A, if there are any, run.
+* The global variables in the main package are initialized.
+* The init() function or functions of main package, if they exist, run.
+* The main() function of the main package begins execution.
+
+
+![Local Image](./Order%20of%20execution%20in%20Go.png "Order of execution in Go")
+
