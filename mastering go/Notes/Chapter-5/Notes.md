@@ -147,3 +147,40 @@ If a main package imports package A and package A depends on package B, then the
 
 ![Local Image](./Order%20of%20execution%20in%20Go.png "Order of execution in Go")
 
+## A package for working with a database
+
+\* The sql.Open() function opens the database connection and keeps it open until the program ends.
+
+\* You need to assign the values returned from the SELECT query into Go variables, in order to use them. This happens with a call to Scan(), which requires pointer parameters. If the SELECT query returns multiple values, you need to put multiple parameters in Scan().
+
+```
+insertStatement = `insert into "userData" ("userid", "name", "surname", "description") values ($1, $2, $3, $4)`
+
+_, err = db.Exec(insertStatement, userID, d.Name, d.Surname, d.Description)
+```
+## Modules 
+A Go module is like a Go package with a version - however, Go modules can consist of multiple packages. Go uses semantic versioning for versioning modules. This means that version begin with the letter v, followed by the major.minor.patch version numbers. Therefore, you can have versions such as v1.0.0, v1.0.5 and so on. The v1, v2, and v3 parts signify the major version of a Go package that is usually not backward compatible. This means that if your Go program works with v1, it will not necessarily work with v2 or v3. The second number in a version is about features. Usually, v1.1.0 has more features than v1.0.2 or v1.0.0, while being compatible with all older versions. Lastly, the third number is just about bug fixes without having any new features. Note that semantic versioning is also used for Go versions.
+
+\* It is better to split the functionality of a package unnecessarily into multiple packages than to add too much functionality to a single Go package.
+
+\* When developing a new Go package, try to use multiple files in order to group similar tasks or concepts.
+
+\* Nobody wants a Go package that prints logging information on the screen. It would be more professional to have a flay for turning on logging when needed.
+
+\* Small details make all the difference3 and give people confidence that you are a serious developer!
+
+## Generating documentation
+In order to document a function, a method, a variable, or even the package itself, you can write comments, as usual, that should be located directly before the element you want to document, without any empty lines in between. You can use one or more single-line comments, which are lines beginning with //, or block comments, which begin with /* and end with */.
+
+It is highly recommended that each Go package you create has a block comment preceding the package declaration that introduces developersw to the package, and also explains what the package does. 
+
+If a line in a block comment begins with a tab, then it is rendered differently in the graphical output, which is good for differentiating between various kinds of information in the documentation.
+
+There are two ways to see the documentation of the package. The first one involves using go get, which also means creating a GitHub repository of the package, as we did with post05. However, as this is for testing purposes, we are going to do things the easy way: we are going to copy it in ~/go/src and access it from there. As the package is
+called document, we are going to create a directory with the same name inside ~/go/ src. After that, we are going to copy document.go in ~/go/src/document and we are done—for more complex packages, the process is going to be more complex as well. In such cases, it would be better to go get the package from its repository.
+
+Either way, the go doc command is going to work just fine with the document package: <br>
+-> go doc document <br>
+If you want to see information about a specific function, you should use go doc, as follows: <br>
+-> go doc document ListUsers
+Additionally, we can use the web version of the Go documentation, which can be accessed after running the godoc utility and going to the Third Party section.
