@@ -184,3 +184,11 @@ Either way, the go doc command is going to work just fine with the document pack
 If you want to see information about a specific function, you should use go doc, as follows: <br>
 -> go doc document ListUsers
 Additionally, we can use the web version of the Go documentation, which can be accessed after running the godoc utility and going to the Third Party section.
+
+## Gitlab Runners and Go
+The go get -v -d ./... command is the Go way of downloading all the package dependencies of a project.
+
+\* go build -o ./bin.temp temp.go: for making binary file in yaml files.
+
+\* In order to set up Github actions, we need to create a directory named .github and then create another directory named workflows in it. The .github/workflows directory contain YAML files with the pipeline configuration.
+
