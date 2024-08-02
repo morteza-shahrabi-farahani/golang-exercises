@@ -7,12 +7,6 @@ import (
 	"sort"
 )
 
-type Entry struct {
-	Name      string
-	Surname   string
-	Telephone string
-}
-
 type PhoneBook []Entry
 
 const CSVFILE = "../data/data.csv"
@@ -23,6 +17,11 @@ func main() {
 		return
 	}
 
+	db, err := ConnectDB()
+	if err != nil {
+		return
+	}
+
 	switch arguments[1] {
 	case "search":
 		if len(arguments) != 3 {
@@ -30,7 +29,7 @@ func main() {
 			return
 		}
 
-		usersList, err := readFile(CSVFILE)
+		usersList, err := getList(db)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -45,7 +44,7 @@ func main() {
 		fmt.Println(result)
 
 	case "list":
-		usersList, err := readFile(CSVFILE)
+		usersList, err := getList(db)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -67,7 +66,7 @@ func main() {
 		fmt.Println("successfully inserted")
 
 	case "delete":
-		usersList, err := readFile(CSVFILE)
+		usersList, err := getList(db)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -98,33 +97,33 @@ func checkArgumentsLength(arguments []string) error {
 	return nil
 }
 
-func readFile(filePath string) ([]Entry, error) {
-	file, err := os.Open(CSVFILE)
-	if err != nil {
-		return nil, fmt.Errorf("File does not exist")
-	}
+// func readFile(filePath string) ([]Entry, error) {
+// 	file, err := os.Open(CSVFILE)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("File does not exist")
+// 	}
 
-	defer file.Close()
+// 	defer file.Close()
 
-	reader := csv.NewReader(file)
-	fileData, err := reader.ReadAll()
-	if err != nil {
-		return nil, fmt.Errorf("error in reading the file")
-	}
+// 	reader := csv.NewReader(file)
+// 	fileData, err := reader.ReadAll()
+// 	if err != nil {
+// 		return nil, fmt.Errorf("error in reading the file")
+// 	}
 
-	var data []Entry
-	for _, record := range fileData {
-		data = append(data, Entry{
-			Name:      record[0],
-			Surname:   record[1],
-			Telephone: record[2],
-		})
-	}
+// 	var data []Entry
+// 	for _, record := range fileData {
+// 		data = append(data, Entry{
+// 			Name:      record[0],
+// 			Surname:   record[1],
+// 			Telephone: record[2],
+// 		})
+// 	}
 
-	sort.Sort(PhoneBook(data))
+// 	sort.Sort(PhoneBook(data))
 
-	return data, nil
-}
+// 	return data, nil
+// }
 
 func writeToFile(filePath string, data *Entry) error {
 	file, err := os.OpenFile(CSVFILE, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
