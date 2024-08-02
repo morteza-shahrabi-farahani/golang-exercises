@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/csv"
 	"fmt"
 	"os"
-	"sort"
 )
 
 type PhoneBook []Entry
@@ -21,6 +19,8 @@ func main() {
 	if err != nil {
 		return
 	}
+
+	defer db.Close()
 
 	switch arguments[1] {
 	case "search":
@@ -58,26 +58,21 @@ func main() {
 			return
 		}
 
-		if err := writeToFile(CSVFILE, &Entry{Name: arguments[2], Surname: arguments[3], Telephone: arguments[4]}); err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		fmt.Println("successfully inserted")
-
-	case "delete":
-		usersList, err := getList(db)
+		id, err := insert(db, &Entry{Name: arguments[2], Surname: arguments[3], PhoneNumber: arguments[4]})
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
+		fmt.Printf("successfully inserted with id = %d \n", id)
+
+	case "delete":
 		if err := validateDelete(arguments); err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		if err := deleteAndWrite(CSVFILE, usersList, arguments[2]); err != nil {
+		if err := delete(db, arguments[2]); err != nil {
 			fmt.Println(err)
 			return
 		}
@@ -125,56 +120,56 @@ func checkArgumentsLength(arguments []string) error {
 // 	return data, nil
 // }
 
-func writeToFile(filePath string, data *Entry) error {
-	file, err := os.OpenFile(CSVFILE, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
-	if err != nil {
-		return fmt.Errorf("File does not exist")
-	}
+// func writeToFile(filePath string, data *Entry) error {
+// 	file, err := os.OpenFile(CSVFILE, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+// 	if err != nil {
+// 		return fmt.Errorf("File does not exist")
+// 	}
 
-	defer file.Close()
+// 	defer file.Close()
 
-	csvWriter := csv.NewWriter(file)
-	temp := []string{data.Name, data.Surname, data.Telephone}
+// 	csvWriter := csv.NewWriter(file)
+// 	temp := []string{data.Name, data.Surname, data.PhoneNumber}
 
-	fmt.Println(temp)
-	err = csvWriter.Write(temp)
-	if err != nil {
-		return err
-	}
-	csvWriter.Flush()
+// 	fmt.Println(temp)
+// 	err = csvWriter.Write(temp)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	csvWriter.Flush()
 
-	return nil
-}
+// 	return nil
+// }
 
-func deleteAndWrite(filePath string, data []Entry, userPhone string) error {
-	file, err := os.Create(filePath)
-	if err != nil {
-		return fmt.Errorf("File does not exist")
-	}
-	defer file.Close()
+// func deleteAndWrite(filePath string, data []Entry, userPhone string) error {
+// 	file, err := os.Create(filePath)
+// 	if err != nil {
+// 		return fmt.Errorf("File does not exist")
+// 	}
+// 	defer file.Close()
 
-	for index, entry := range data {
-		if entry.Telephone == userPhone {
-			data = append(data[:index], data[index+1:]...)
-			break
-		}
-	}
+// 	for index, entry := range data {
+// 		if entry.PhoneNumber == userPhone {
+// 			data = append(data[:index], data[index+1:]...)
+// 			break
+// 		}
+// 	}
 
-	csvWriter := csv.NewWriter(file)
-	for _, entry := range data {
-		temp := []string{entry.Name, entry.Surname, entry.Telephone}
-		if err := csvWriter.Write(temp); err != nil {
-			return err
-		}
-	}
-	csvWriter.Flush()
+// 	csvWriter := csv.NewWriter(file)
+// 	for _, entry := range data {
+// 		temp := []string{entry.Name, entry.Surname, entry.PhoneNumber}
+// 		if err := csvWriter.Write(temp); err != nil {
+// 			return err
+// 		}
+// 	}
+// 	csvWriter.Flush()
 
-	return nil
-}
+// 	return nil
+// }
 
 func serach(data []Entry, telephone string) (*Entry, error) {
 	for _, entry := range data {
-		if entry.Telephone == telephone {
+		if entry.PhoneNumber == telephone {
 			return &entry, nil
 		}
 	}
