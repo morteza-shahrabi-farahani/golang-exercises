@@ -1,13 +1,11 @@
 package main
 
 import (
-	database "Code/db"
-	entry "Code/phonebook"
 	"fmt"
 	"os"
 )
 
-type PhoneBook []entry.Entry
+type PhoneBook []Entry
 
 const CSVFILE = "../data/data.csv"
 
@@ -17,7 +15,7 @@ func main() {
 		return
 	}
 
-	db, err := database.ConnectDB()
+	db, err := ConnectDB()
 	if err != nil {
 		return
 	}
