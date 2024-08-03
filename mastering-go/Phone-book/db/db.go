@@ -1,4 +1,4 @@
-package main
+package phonebook
 
 import (
 	"database/sql"
@@ -23,7 +23,7 @@ func ConnectDB() (*sql.DB, error) {
 	return conn, nil
 }
 
-func getList(db *sql.DB) ([]Entry, error) {
+func GetList(db *sql.DB) ([]Entry, error) {
 	rows, err := db.Query("SELECT * FROM phone_book")
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func getList(db *sql.DB) ([]Entry, error) {
 	return entries, nil
 }
 
-func insert(db *sql.DB, entry *Entry) (int64, error) {
+func Insert(db *sql.DB, entry *Entry) (int64, error) {
 	result, err := db.Exec("INSERT INTO phone_book (name, surname, phone_number) VALUES ($1, $2, $3)", entry.Name, entry.Surname, entry.PhoneNumber)
 	if err != nil {
 		return 0, err
@@ -58,7 +58,7 @@ func insert(db *sql.DB, entry *Entry) (int64, error) {
 	return id, nil
 }
 
-func delete(db *sql.DB, phoneNumber string) error {
+func Delete(db *sql.DB, phoneNumber string) error {
 	result, err := db.Exec("DELETE FROM phone_book WHERE phone_number = ?", phoneNumber)
 	if err != nil {
 		return err

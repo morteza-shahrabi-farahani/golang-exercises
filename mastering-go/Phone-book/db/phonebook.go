@@ -1,4 +1,4 @@
-package main
+package phonebook
 
 type Entry struct {
 	ID          int64

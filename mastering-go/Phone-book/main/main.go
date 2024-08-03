@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"os"
+
+	phonebook "github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/db"
 )
 
-type PhoneBook []Entry
+type PhoneBook []phonebook.Entry
 
 const CSVFILE = "../data/data.csv"
 
@@ -15,7 +17,7 @@ func main() {
 		return
 	}
 
-	db, err := ConnectDB()
+	db, err := phonebook.ConnectDB()
 	if err != nil {
 		return
 	}
@@ -29,7 +31,7 @@ func main() {
 			return
 		}
 
-		usersList, err := getList(db)
+		usersList, err := phonebook.GetList(db)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -44,7 +46,7 @@ func main() {
 		fmt.Println(result)
 
 	case "list":
-		usersList, err := getList(db)
+		usersList, err := phonebook.GetList(db)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -58,7 +60,7 @@ func main() {
 			return
 		}
 
-		id, err := insert(db, &Entry{Name: arguments[2], Surname: arguments[3], PhoneNumber: arguments[4]})
+		id, err := phonebook.Insert(db, &phonebook.Entry{Name: arguments[2], Surname: arguments[3], PhoneNumber: arguments[4]})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -72,7 +74,7 @@ func main() {
 			return
 		}
 
-		if err := delete(db, arguments[2]); err != nil {
+		if err := phonebook.Delete(db, arguments[2]); err != nil {
 			fmt.Println(err)
 			return
 		}
@@ -167,7 +169,7 @@ func checkArgumentsLength(arguments []string) error {
 // 	return nil
 // }
 
-func serach(data []Entry, telephone string) (*Entry, error) {
+func serach(data []phonebook.Entry, telephone string) (*phonebook.Entry, error) {
 	for _, entry := range data {
 		if entry.PhoneNumber == telephone {
 			return &entry, nil
