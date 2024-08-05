@@ -24,3 +24,42 @@ Buffered readers can also improve performance by reducing the number of system c
 
 ### Reading from /dev/random 
 The purpose of the /dev/random system device is to generate random data, which you might use for testing your programs.
+
+## Working with JSON
+Go allows you to add support for JSON fiellds in Go structures using tags. Tags control the encoding and decoding of JSON records to and from Go structures.
+
+Marshaling is the process of converting a Go structure iinto a JSON record. Unmarshaling is the process of converting a JSON record given as a byte slice into a Go structure. 
+
+```
+type UseAll struct {
+    Name string `json:"username"`
+}
+```
+
+The previous metadata tells us that the Name field of the UseAll structure is translated to username in the JSON record and vice versa.
+
+Imagine tht you have a Go structure that you want to convert into a JSON record without including any empty fields - the next code illustrates how to perform that task with the use of omitempty
+
+```
+ type NoEmpty struct {
+    Name    string `json:"username"`
+    Surname string `json:"surname"`
+    Year    int    `json:"creationyear,omitempty"`
+}
+
+// now if we have a variable NoEmpty{Name:"Morteza"} and marshal it to JSON, 
+// it will give this result {"username": "Morteza", "surname":""} 
+```
+
+The noEmpty structure has the default values for surname and year fields. However, as they are not specifically defined, json.Marshal() ignores the Year field because it has the omitempty tag but does not ignore the Surname fields, which has the empty string value.
+
+Last, imagine that you have some sensitive data on some of the fields of a Go structure that you do not want to include in the JSON records. You can do that by including the "-" special value in the desired json structure tags.
+
+```
+ type Password struct {
+    Name     string `json:"username"`
+    Surname  string `json:"surname,omitempty"`
+    Year     int    `json:"creationyear,omitempty"`
+    Pass     strubg `json:"-"`
+}
+```
