@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	phonebook "github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/db"
+	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/db"
+	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
 )
 
 type PhoneBook []phonebook.Entry
@@ -17,7 +18,7 @@ func main() {
 		return
 	}
 
-	db, err := phonebook.ConnectDB()
+	db, err := db.ConnectDB()
 	if err != nil {
 		return
 	}
