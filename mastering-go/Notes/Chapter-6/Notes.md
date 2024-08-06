@@ -63,3 +63,13 @@ Last, imagine that you have some sensitive data on some of the fields of a Go st
     Pass     strubg `json:"-"`
 }
 ```
+
+## Working with XML
+The idea behind XML and Go is the same as with JSON and Go. You put tags in Go structures in order to specify the XML tags and you can still serialize and deserialize XML records using xml.Unmarshal() and xml.Marshal()
+
+\* A field with the omitempty option is omitted from the output if it is empty. An empty value is any of 0,false, a nil pointer or interface, and any array, slice, map, or string with a length of zero.
+
+\* The go mod init command initializes and writes a new go.mod file in the current directory whereas the go mod tidy command synchronizes go.mod with the source code.
+
+\* If you want to play it safe and you are using packages that do not belong to the standard library, then developing inside ~/go/src, committing to a Github repository, and using Go modules for all dependencies might be the best option. However, this does not mean that you must develop your own packages in the form of Go modules.
+
