@@ -59,3 +59,13 @@ func Delete(db *sql.DB, phoneNumber string) error {
 
 	return nil
 }
+
+func Serach(data []Entry, telephone string) (*Entry, error) {
+	for _, entry := range data {
+		if entry.PhoneNumber == telephone {
+			return &entry, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Not found!!")
+}

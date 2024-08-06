@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/controller"
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/db"
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
 )
@@ -25,66 +26,7 @@ func main() {
 
 	defer db.Close()
 
-	switch arguments[1] {
-	case "search":
-		if len(arguments) != 3 {
-			fmt.Println("Please provide a search term")
-			return
-		}
-
-		usersList, err := phonebook.GetList(db)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		result, err := serach(usersList, arguments[2])
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		fmt.Println(result)
-
-	case "list":
-		usersList, err := phonebook.GetList(db)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		fmt.Println(usersList)
-
-	case "insert":
-		if err := validateInsert(arguments); err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		id, err := phonebook.Insert(db, &phonebook.Entry{Name: arguments[2], Surname: arguments[3], PhoneNumber: arguments[4]})
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		fmt.Printf("successfully inserted with id = %d \n", id)
-
-	case "delete":
-		if err := validateDelete(arguments); err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		if err := phonebook.Delete(db, arguments[2]); err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		fmt.Println("successfully deleted")
-
-	default:
-		fmt.Println("not valid option")
-	}
+	controller.Handler(arguments, db)
 }
 
 func checkArgumentsLength(arguments []string) error {
@@ -170,44 +112,18 @@ func checkArgumentsLength(arguments []string) error {
 // 	return nil
 // }
 
-func serach(data []phonebook.Entry, telephone string) (*phonebook.Entry, error) {
-	for _, entry := range data {
-		if entry.PhoneNumber == telephone {
-			return &entry, nil
-		}
-	}
+// func (phoneBook PhoneBook) Len() int {
+// 	return len(phoneBook)
+// }
 
-	return nil, fmt.Errorf("Not found!!")
-}
+// func (phoneBook PhoneBook) Less(i, j int) bool {
+// 	if phoneBook[i].Surname == phoneBook[j].Surname {
+// 		return phoneBook[i].Name < phoneBook[j].Name
+// 	}
 
-func validateDelete(arguments []string) error {
-	if len(arguments) != 3 {
-		return fmt.Errorf("not enought arguments for delete")
-	}
+// 	return phoneBook[i].Surname < phoneBook[j].Surname
+// }
 
-	return nil
-}
-
-func validateInsert(arguments []string) error {
-	if len(arguments) != 5 {
-		return fmt.Errorf("not enought arguments for insert")
-	}
-
-	return nil
-}
-
-func (phoneBook PhoneBook) Len() int {
-	return len(phoneBook)
-}
-
-func (phoneBook PhoneBook) Less(i, j int) bool {
-	if phoneBook[i].Surname == phoneBook[j].Surname {
-		return phoneBook[i].Name < phoneBook[j].Name
-	}
-
-	return phoneBook[i].Surname < phoneBook[j].Surname
-}
-
-func (phoneBook PhoneBook) Swap(i, j int) {
-	phoneBook[i], phoneBook[j] = phoneBook[j], phoneBook[i]
-}
+// func (phoneBook PhoneBook) Swap(i, j int) {
+// 	phoneBook[i], phoneBook[j] = phoneBook[j], phoneBook[i]
+// }
