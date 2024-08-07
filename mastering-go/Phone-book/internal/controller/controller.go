@@ -8,6 +8,10 @@ import (
 )
 
 func Handler(arguments []string, db *sql.DB) {
+	if err := checkArgumentsLength(arguments); err != nil {
+		return
+	}
+
 	switch arguments[1] {
 	case "search":
 		if len(arguments) != 3 {
@@ -81,6 +85,14 @@ func validateDelete(arguments []string) error {
 func validateInsert(arguments []string) error {
 	if len(arguments) != 5 {
 		return fmt.Errorf("not enought arguments for insert")
+	}
+
+	return nil
+}
+
+func checkArgumentsLength(arguments []string) error {
+	if len(arguments) == 1 {
+		return fmt.Errorf("Please enter required arguments!!")
 	}
 
 	return nil
