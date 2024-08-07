@@ -73,3 +73,11 @@ The idea behind XML and Go is the same as with JSON and Go. You put tags in Go s
 
 \* If you want to play it safe and you are using packages that do not belong to the standard library, then developing inside ~/go/src, committing to a Github repository, and using Go modules for all dependencies might be the best option. However, this does not mean that you must develop your own packages in the form of Go modules.
 
+## The viper package
+In Go, there are many packages to handle application configuration. The viper package is most popular among them in providing a complete configuration solution of an application. It supports numerous configuration file formats such as JSON, YAML, TOML, HCL and Java properties format. This programming tutorial introduces Golang’s viper package with Go code examples.
+
+## The cobra package
+Cobra is a very handy and popular Go package that allows you to develop command-line utilities with commands, subcommands, and aliases.
+
+\* It is not necessary to know about all of the supported environment variables such as GO111MODULE, but sometimes they can help you resolve tricky problems with your GO installation. So, if you want to learn about your current Go environment, you can use the go env command.
+
