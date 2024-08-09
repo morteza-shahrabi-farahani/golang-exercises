@@ -1,1 +1,0 @@
-protoc --go_out=proto/api --go-grpc_out=proto/api proto/calculator.proto
