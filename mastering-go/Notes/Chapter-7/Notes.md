@@ -11,3 +11,163 @@ A process is an OS representation of a running program, while a program is a bin
 A thread is a smaller and lighter entity than a process. Processes consist of one or more threads that have their own flow of control and stack. A quick and simplistic way to differentiate a thread from a process is to consider a process as the running binary file and a thread as a subset of a process.
 
 A goroutine is the minimum Go entity that can be executed concurrently. The use of the word minimum is very important here, as goroutines are not autonomous entities like UNIX processes - goroutines live in OS threads that live in OS processes. The good thing is that goroutines are lighter than threads, which, in turn, are lighter than processes - running thousands or hundreads of thousands of goroutines on a single machine is not a problem. Among the reasons that goroutines are lighter than threds is because they have a smaller  stack that can grouw, they have a faster startup time, and they can communicate with each other through channels with low latency. In practice, this maens that a process can have multiple threads as well as lots of goroutines, whereas a goroutine needs the environment of a process to exist. So, to create a goroutine, you need to have a process with at least one thead. The OS takes care of the process and thread scheduling, while Go creates the necessary threds and the developer creates the desired number of goroutines. 
+
+### Goroutine vs. Thread
+Each operating system thread has a fixed-size block memory (sometimes as large as 2MB) for its stack, which is the work area where it saves the local variables of function calls that are in process or momentarily halted while another function is performed. This fixed-size stack is both too big and too small. A 2MB stack would be a tremendous waste of memory for a small goroutine that simply waits for a WaitGroup before closing a channel.
+
+It is not uncommon for a Go program to generate hundreds of thousands of goroutines at once, which would be difficult to stack. Regardless of size, fixed-size stacks are not always large enough for the most complex and deeply recursive routines. Changing the fixed size can improve space efficiency and allow for the creation of more threads, or it can permit more deeply recursive algorithms, but not both.
+
+A goroutine, on the other hand, starts with a modest stack, typically 2KB. The stack of a goroutine, like the stack of an OS thread, maintains the local variable of active and suspended function calls, but unlike the stack of an OS thread, the stack of a goroutine is not fixed; it grows and shrinks as needed. A goroutine stack’s size limit could be as much as 1GB, which is orders of magnitude larger than a conventional fixed-size thread stack; however, few goroutines use that much.
+
+**Goroutines**<br>
+Lightweight and concurrent units of execution in Go.
+
+**Advantages of goroutines**:
+
+a. Lightweight and efficient compared to OS threads.
+b. Faster startup and lower memory consumption.
+c. Easy to create and manage with the "go" keyword.
+d. Ideal for concurrent programming and handling I/O-bound tasks.
+
+**OS Threads:** <br>
+Higher Memory Footprint: OS threads typically have a larger memory footprint compared to goroutines due to their underlying system structures and management overhead.
+Context Switching Overhead: Context switching between OS threads incurs additional overhead as it requires system calls. This can impact the overall performance and scalability of an application.
+Suitable for CPU-Intensive Tasks: OS threads are better suited for CPU-bound tasks that require intensive computation. They can fully utilize the available CPU cores, allowing parallel execution of computationally intensive workloads.
+Manual Thread Management: With OS threads, developers have to manually manage thread creation, synchronization, and load balancing, which can be more complex and error-prone compared to goroutines.
+
+![Local Image](./Goroutine-vs-thread.png "Goroutine vs threads")
+
+## The Go scheduler
+The OS kernel scheduler is responsible for the execution of the threads of a program. Similarly, the Go runtime has its own scheduler, which is responsible for the execution of the goroutines using a technique known as m:n scheduling, where m goroutines are executed using n OS threads using multiplexing. The Go scheduler is the Go component responsible for the way and the order in which the goroutines of a Go program get executed. 
+
+The Go scheduler only deals with the goroutines of a single program, its operation is much simpler, cheaper, and faster than the operation of the kernel scheduler.
+
+Go uses the fork-join concurrency model. The fork part of the model, which should not be confused with the fork(2) system call, states that a child branch can be created at any point of a program. Analogously, the join part of the Go concurrency model is where the child branch ends and joins with its parent. Keep in mind that both sync.Wait() statements and channels that collect the results of goroutines are join points, whereas each new goroutine creates a child branch.
+
+The fair scheduling strategy, which is pretty straightforward and has a simple implementation, shares all load evenly among the available processors. At first, this might look like the perfect strategy because it does not have to take many things into consideration while keeping all processors equally occupied. However, it turns out that this is not exactly the case because most distributed tasks usually depend on other tasks. Therefore, some processors are underutilized, or equivalently, some processors are utilized more than others. A goroutine is a task, whereas everything after the calling statement of a goroutine is a continuation. In the work-stealing strategy used by the Go scheduler, a logical processor that is underutilized looks for additional work from other processors. 
+
+When it finds such jobs, it steals them from the other processor or processors, hence the name. Additionally, the work-stealing algorithm of Go queues and steals continuations. A stalling join, as is suggested by ites name, is a point where a thread of execution stalls at a join and starts looking for other work to do. 
+
+Alghough both task stealing and continuation stealing have stalling joins, continuations happen more often than tasks; therefore, the Go scheduling algorithm works with continuations rather than tasks. 
+
+The main disadvantage of continuation stealing is that it requires extra work from the compiler of the programming language. Fortunately, Go provides that extra help and therefore uses continuation stealing in its work-stealing algorithm. One of the benefits of continuation stealing is that you get the same results when using function calss instead of goroutines or a single thread with multiple goroutines. This makes perfect sense, as only one thing is executed at any given point in both cases.
+
+The Go scheduler works using three main kinds of entities: OS threads (M), which are related to the OS in use; goroutines (G); and logical processors (P). The number of processors that can be used by a Go program is specified by the value of the GOMAXPROCS environment variable. Now, let us return to the m:n scheduling algorithm used in Go. Strictly speaking, at any time, you have m goroutines that are executed, and therefore scheduled to run, on n OS threads using, at most, GOMAXPROCS number of logical processors.
+
+The next figure shows that there are two different kinds of queues: a global run queue and a local run queue attached to each logical processor. Goroutines from the global queue are assigned to the queue of a logical processor in order to get executed at some point.
+
+![Local Image](./Go-scheduler-operation.png "Goroutine vs threads")
+
+Each logical processor can have multiple threads, and the stealing occurs between the local queues of the available logical processors. Finally, keep in mind that the Go scheduler is allowed to create more OS threads when needed. OS threads are pretty expensive in terms of resources, which means that dealing too much with OS threads might slow down you Go applications.
+
+**Go's work-stealing scheduler**<br>
+Go scheduler’s job is to distribute runnable goroutines over multiple worker OS threads that runs on one or more processors. In multi-threaded computation, two paradigms have emerged in scheduling: work sharing and work stealing.
+
+Work-sharing: When a processor generates new threads, it attempts to migrate some of them to the other processors with the hopes of them being utilized by the idle/underutilized processors.
+Work-stealing: An underutilized processor actively looks for other processor’s threads and “steal” some.
+The migration of threads occurs less frequently with work stealing than with work sharing. When all processors have work to run, no threads are being migrated. And as soon as there is an idle processor, migration is considered.
+
+Go has a work-stealing scheduler since 1.1, contributed by Dmitry Vyukov. This article will go in depth explaining what work-stealing schedulers are and how Go implements one.
+
+**Scheduling basics**<br>
+Go has an M:N scheduler that can also utilize multiple processors. At any time, M goroutines need to be scheduled on N OS threads that runs on at most GOMAXPROCS numbers of processors. Go scheduler uses the following terminology for goroutines, threads and processors:
+
+G: goroutine
+M: OS thread (machine)
+P: processor
+
+There is a P-specific local and a global goroutine queue. Each M should be assigned to a P. Ps may have no Ms if they are blocked or in a system call. At any time, there are at most GOMAXPROCS number of P. At any time, only one M can run per P. More Ms can be created by the scheduler if required.
+
+![Local Image](./web-Go-scheduler.png "Goroutine vs threads")
+
+Each round of scheduling is simply finding a runnable goroutine and executing it. At each round of scheduling, the search happens in the following order:
+```
+runtime.schedule() {
+    // only 1/61 of the time, check the global runnable queue for a G.
+    // if not found, check the local queue.
+    // if not found,
+    //     try to steal from other Ps.
+    //     if not, check the global runnable queue.
+    //     if not found, poll network.
+}
+```
+Once a runnable G is found, it is executed until it is blocked.
+
+Note: It looks like the global queue has an advantage over the local queue but checking global queue once a while is crucial to avoid M is only scheduling from the local queue until there are no locally queued goroutines left.
+
+**Stealing**<br>
+When a new G is created or an existing G becomes runnable, it is pushed onto a list of runnable goroutines of current P. When P finishes executing G, it tries to pop a G from own list of runnable goroutines. If the list is now empty, P chooses a random other processor (P) and tries to steal a half of runnable goroutines from its queue.
+
+![Local Image](./sharing-queues.png "Goroutine vs threads")
+
+In the case above, P2 cannot find any runnable goroutines. Therefore, it randomly picks another processor (P1) and steal three goroutines to its own local queue. P2 will be able to run these goroutines and scheduler work will be more fairly distributed between multiple processors.
+
+### The GOMAXPROCS environment variable
+The GOMAXPROCS environment variable allows you to set the number of OS threads (CPUs) that can execute user-level Go code simultaneously. Starting with Go version 1.5, the default value of GOMAXPROCS should be the number of logical cores available in you machine. 
+
+### Concurrency and parallelism
+It is a common misconception that concurrency is the same thing as parallelism. This is just not true! Parallelism is the simultaneous execution of multiple entities of some kind, whereas concurrency is a way of structuring your components so the they can be executed independently when possible.
+
+It is only when you build software components concurrently that you can safely execute them in parallel, when and if your OS and your harware permit it. 
+
+In a vlid concurrent design, adding concurrent entities makes the whole system run faster because more things can be executed in parallel. So, the desired parallelism comes from a better concurrent expression and implementation of the problem. The developer is responsible for taking concurrency into account during the desing phase of a system and will benefit from a potential parallel execution of the components of the system. So, the developer should not think about parallelism but about breaking the system. So, the developer should not think about parallelism but about breaking things into independent components that solve the initial problem when combined. 
+
+## Goroutines
+\* You cannot control or make any assumptions about the order in which you goroutines are going to be executed because that depends on the scheduler of the OS, the Go scheduler, and the load of the OS.
+
+You can define, create, and execute a new goroutine using the go keyword followed by a function name or an anonymous function.
+
+```
+func main() {
+    go func(x int) {
+        fmt.Printf("%d ", x)
+    }(10)
+```
+
+The (10) at the end is how you pass a parameter to an anonymous function.
+
+```
+go printme(15)
+```
+
+This is how you execute a function as a goroutine. As a general rule of thumb, the functions that you execute as goroutines do not return any values directly.
+
+### Waiting for your goroutines to finish
+
+As a Go program does not wait for its goroutines to end before exiting, we need to delay it manually. It is not enough to create multiple goroutines = you also need to wait for them to finish before the main() function ends.
+
+\* goroutines are not always executed in the same order.
+
+The synchronization process begins by defining a sync.WaitGroup variable and using the Add(), Done() and Wait() methods. If you look at the source code of the sync Go package, you see that the sync.WaitGroup type is nothing more than a structure with two fields:
+
+```
+type WaitGroup struct {
+    noCopy noCopy
+    state1 [3]uint32
+}
+```
+
+Each call to sync.Add() increases a counter in the state1 field, which is an array with three uint32 elements. Notice that it is really important to call sync.Add() before the go statement in order to prevent any race conditions. When each goroutine finishes its job, the sync.Done() function should be executed in order to decrease the same counter by one. Behind the scenes, sync.Done() runs a Add(-1) call. The Wait() method waits until that counter becomes 0 in order to return. The return of Wait() inside the main() function means that main() is going to return and the program ends.
+
+\* You can call Add() with a positive integer value other than 1 in order to avoid calling Add(1) multiple times. This can be handy when you know the number of goroutines you are going to create in advance. Done() does not support that functionality.
+
+```
+for i := 0; i < count; i++ {
+    waitGroup.Add(1)
+    go func(x int) {
+        defer waitGroup.Done()
+        fmt.Printf("%d ", x)
+    }(i)
+}
+
+fmt.Printf("%#v\n", waitGroup)
+waitGroup.Wait()
+```
+
+The Done() call is going to be executed just before the anonymous function returns because of the defer keyword.
+
+\* The value in the third place of the state1 slice is the number of times which we called Add(1).
+
+\* Remember that using more goroutines in a program is not a panacea for performance, as more goroutines, in addition to the various calls to sync.Add(), sync.Wait(), and sync.Done(), might slow doen your program due to the extra housekeeping that needs to be done by the Go scheduler.
+
+\* Concurrent programs do not always crash or misbehave as the order of execution can change, which might change the behavior or the program. This makes debugging even more difficult.
