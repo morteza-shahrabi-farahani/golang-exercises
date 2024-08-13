@@ -171,3 +171,43 @@ The Done() call is going to be executed just before the anonymous function retur
 \* Remember that using more goroutines in a program is not a panacea for performance, as more goroutines, in addition to the various calls to sync.Add(), sync.Wait(), and sync.Done(), might slow doen your program due to the extra housekeeping that needs to be done by the Go scheduler.
 
 \* Concurrent programs do not always crash or misbehave as the order of execution can change, which might change the behavior or the program. This makes debugging even more difficult.
+
+## Channels
+A channel is a communication mechanism that, among other things, allows goroutines to exchange data. Firstly, each channel allows the exchange of a particular data type, which is also called  the element type of the chanel, and secondly, for a channel to operate properly, you need someone to receive what is sent via the channel.
+
+A pipeline is a virtual method for connecting goroutines and channels so that the output of one goroutine becomes the input of another goroutine using channels to transfer your data. One of the benefits that you get from using pipelines is that there is a constant data flow in your program, as no goroutine or channel has to wait for everything to be commpleted in order to start their execution. Additionally, you use fewer variables and therefore less memory space because you do not have to save everything as a variable. Finally, the use of pipelines simplifies the desing of the program and improves its maintainability.
+
+### Writing to and reading from a channel
+Writing the value val to channel ch is as easy as writing ch <- val. Additionally, reading a single value from a channel named c is like <- c
+
+```
+func main() {
+    c := make(chan int, 1)
+}
+```
+
+This channel is buffered with a size of 1. This means that as soon as we fill that buffer, we can close the channel, and the goroutine is going to continue its execution and return. A channel that is unbuffered has a different behavior. When you try to send a value to that channel, it blocks forever because it is waiting for someone to fetch that value. The following code shows a technique for determining whether a channel is closed or not.
+
+```
+_, ok := <-c
+if ok {
+    fmt.Println("Channel is open!")
+} else {
+    fmt.Println("Channel is closed!")
+}
+```
+
+\* When trying to read from a closed channel, we get the zero value of its data type. Howeverm if you try to write to a closed channel, your program is going to crash in a bad way (panic).
+
+### Channels as function parameters
+When using a channel as a function parameter, you can specify its direction; that is, whether it is going to be used for sending or receiving data. In my opinion, if you know the purpose of a channel in advance, you should use this capability because it makes your programs more robust. If you try to perform an operation on a channel parameter that is not allowed, the Go compiler is going to complain. This happens even if the function is not being used.
+
+## Race conditions
+A data race condition is a situation where two or more running elements, such as threads and goroutines, try to take control of or modify a shared resource or shared variable of a program. Strictly speaking, a data race occurs when two or more instructions access the same memory address, where at least one of them performs a write operation. If all operations are read operations, then there is no race condition. In practice, this means that you might get different output if you run your program multiple times, and that is a bad thing.
+
+Using the -race flag when running or building Go source files executes the Go race detector, which makes the compiler create a modified version of a typical executable file. This modified version can record all accesses to shared variables as well as all synchronization events that take place, including calls to sync.Mutex and sync.WaitGroup. After analyzing the relevant events, the race detector prints a report that can help you identify potential problems so that you can correct them.
+
+## The select keyword
+The select keyword is really important because it allows you to listen to multiple channels at the same time. In practice, this means that select allows a goroutine to wait on multiple communication operations. So, select gives you the power to listen to multiple channels using a single select block. 
+
+A select statement is not evalueated sequentially, as all of its channels are examined simultaneously. If none of the channels in a select statement are ready, the select statement blocks(waits) until one of the channels is ready. If multiple channels of a select statement are ready, then the Go runtime makes a random selection from the set of these ready channels.
