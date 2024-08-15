@@ -211,3 +211,17 @@ Using the -race flag when running or building Go source files executes the Go ra
 The select keyword is really important because it allows you to listen to multiple channels at the same time. In practice, this means that select allows a goroutine to wait on multiple communication operations. So, select gives you the power to listen to multiple channels using a single select block. 
 
 A select statement is not evalueated sequentially, as all of its channels are examined simultaneously. If none of the channels in a select statement are ready, the select statement blocks(waits) until one of the channels is ready. If multiple channels of a select statement are ready, then the Go runtime makes a random selection from the set of these ready channels.
+
+## Go channels revisited 
+
+The zero value of the channel thpe is nil, and if you send a message to a closed channel, the program panics. However, if you try to read from a closed channel, you get the zero value of the type of that channel. So, after closing a channel, you can no longer write to it, but you can still read from it. To be able to close a channel, the channel must not be receive-only.
+
+Additionally, a nil channel always blocks, which means that both reading and writing from nil channels blocks. Finally, if you try to close a nil channel, your program is going to panic.
+
+### Buffered channels
+The topic of this subsection is buffered channels. Thesse channels allow us to put jobs in a queue quickly in order to be able to deal with more request and process requests later on. Moerover, you can use buffered channels as semaphores in order to limit the throughput of your application. 
+
+The presented technique works as follows: all incoming requests are forwarded to a channel, which processes them one by one. When the channel is done processing a request, it sends a message to the original caller saying that it is ready to process a new one. So, the capacity of the buffer of the channel restricts the number of simultaneous requests that it can keep.
+
+### Worker pools
+A worker pool is a set of threads that process jobs assigned to them. The Apache web server and the net/http package of Go more or less work this way: the main process accepts all incoming requests, which are forwarded to worker processes to get served. Once a worker process has finished its job, it is ready to serve a new client. As Go does not have threads, the presented implementation is going to use goroutines instead of threads. Additionally, threads do not usually die after serving a request because the cost of ending a thread and creating a new one is too high, whereas goroutines do die after finishing their job. Worker pools in Go are implemented with the help of buffered channels, because they allow you to llimit the number of goroutines running at the same time.
