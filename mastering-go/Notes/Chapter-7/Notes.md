@@ -225,3 +225,30 @@ The presented technique works as follows: all incoming requests are forwarded to
 
 ### Worker pools
 A worker pool is a set of threads that process jobs assigned to them. The Apache web server and the net/http package of Go more or less work this way: the main process accepts all incoming requests, which are forwarded to worker processes to get served. Once a worker process has finished its job, it is ready to serve a new client. As Go does not have threads, the presented implementation is going to use goroutines instead of threads. Additionally, threads do not usually die after serving a request because the cost of ending a thread and creating a new one is too high, whereas goroutines do die after finishing their job. Worker pools in Go are implemented with the help of buffered channels, because they allow you to llimit the number of goroutines running at the same time.
+
+### Signal channels
+A signal channel is one that is used just for signaling. Put simply, you can use a signal channel when you want to inform another goroutine about something. Signal channels should not be used for data transferring.
+
+## Shared memory and shared variables
+Shared memory and shared variables are huge topics in concurrent programming and the most common ways for UNIX threads to communicate with each other. The same principles apply to Go and goroutines. A mutex variable, which is an abbreviation of mutual exclusion variable, is mainly used for thread synchronization and for protecting shared data when multiple writes can occur at the same time. A mutex works like a buffered channel with a capacity of one, which allows at most one goroutine to access a shared variable at any given time. This means that there is no way for two or more goroutines to be able to update that variable simultabeously. Go offers the sync.Mutex and sync.RMMutex data types.
+
+A critical section of a concurrent program is the code that cannot be executed simultaneously by all processes, threads, or, in this case, goroutines. It is the code that needs to be protected by mutexes. Therefore, identifying the critical sections of your code makes the whole programming process so much simpler that you should pay particular attention to this task. A critical section cannot be embedded into another critical section when both critical sections use the same sync.Mutex or sync.RWMutex variable.
+
+### The sync.Mutex type
+
+Here is an example usage of lock and unlock functions.
+
+```
+func read() int {
+	m.Lock()
+	a := v1
+	m.Unlock()
+	return a
+}
+```
+
+\* If you lock a mutex without releasing it afterwards, this means that if we run another goroutine, all instances after the first one are going to be blocked waiting to Lock() the shared mutex. As expected, the program will be crashed because of the deadlock. To avoid such situations, always remember to unlock any mutexes created in your program.
+
+### The sync.RWMutex type
+With using sync.RWMutex you can have multiple readers owning a sync.RWMutex mutex This means that read operations are usually faster with sunc.RWMutex. However, there is one important detail that you should be aware of: until all of the readers of a sync.RWMutex mutex unlock that mutex, you cannot lock it for writing, which is the small price you have to pay for the performance improvement you get for allowing multiple readers.
+
