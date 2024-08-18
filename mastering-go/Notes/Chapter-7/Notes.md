@@ -252,3 +252,51 @@ func read() int {
 ### The sync.RWMutex type
 With using sync.RWMutex you can have multiple readers owning a sync.RWMutex mutex This means that read operations are usually faster with sunc.RWMutex. However, there is one important detail that you should be aware of: until all of the readers of a sync.RWMutex mutex unlock that mutex, you cannot lock it for writing, which is the small price you have to pay for the performance improvement you get for allowing multiple readers.
 
+## The atomic package
+An atomic operation is an operation that is completed in a single step relative to other threads or, in this case, to other goroutines. This means that an atomic operation cannot be interrupted in the middle of it. The Go Standard library offers the atomic package, which, in some simple cases, can help you to avoid using a mutex. With the atomic package, you can have atomic counters accessed by multiple goroutines without synchronization issues and without worrying about race conditions. However, mutexes are more versatile than atomic operations.
+
+When using an atomic variable, all reading and writing operations of an atomic variable must be done using the functions provided by the atomic package in order to avoid race conditions.
+
+```
+func (c *atomCounter) Value() int64 {
+    return atomic.LoadInt64(&c.val)
+}
+```
+
+## Sharing memory using goroutines
+Although shared memory is the traditional way that threads communicate with each other, Go comes with built-in synchronization features that allow a single goroutine to own a shared piece of data. This means that other goroutines must send message to this single goroutine that owns the shared data, which prevents the corruption of the data. Such a goroutine is called a monitor goroutine. In Go terminology, this is sharing by communication instead of communicating by sharing. 
+
+## Closured variables and the go statement
+Notice that closured variables in goroutines are evaluated when the goroutine actually runs and when the go statement is executed.
+
+```
+func main() {
+    for i := 0; i <= 20; i++ {
+        go func() {
+            fmt.Print(i, " ")
+        }()
+    }
+
+    time.Sleep(time.Second)
+    fmt.Println()
+}
+
+// the result would be something like 
+// 3 7 21 21 21 21 21 21 21 21 21 21 21 21 21 21
+
+// As i is a closured variable, it is evaluated at the time of execution. As the goroutines begin but wait for the Go scheduler to allow them to get executed, the for loop ends.
+```
+
+## The context package
+The main purpose of the context packae is to define the Context type and support cancellation. There are times when, for some reason, you want to abandon what you are doing. However, it would be very helpful to be able to include some extra information about your cancellation decisions. The context package allows you to do exactly that.
+
+We use context.Background() to initialize an empty context. 
+
+The WichCancel() method returns a copy of parent context with a new Done channel. Notice that the cancel variable, which is a function, is one of the return values of context.CancelFunc(). The context.WithCancel() function uses an existing Context and creates a child with cancellation. The context.WithCancel() function also returns a Done channel that can be closed, either when the cnacel() function is called or when the Done channel of the parent context is closed.
+
+The context.WithTimeout() requires two parameters: a Context parameter and a time.Duration parameter. When the timeout period expires the cancel() function is called automatically.
+
+Context.WithDeadline() requires two parameters: a Context variable and a time in the futuer that signifies the deadline of the operation. When the deadline passes, the cancel() function is called automatically.
+
+
+
