@@ -298,5 +298,4 @@ The context.WithTimeout() requires two parameters: a Context parameter and a tim
 
 Context.WithDeadline() requires two parameters: a Context variable and a time in the futuer that signifies the deadline of the operation. When the deadline passes, the cancel() function is called automatically.
 
-
-
+\* You can pass values in a context and use it as a key-value store.
