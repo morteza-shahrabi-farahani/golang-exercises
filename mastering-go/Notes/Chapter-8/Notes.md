@@ -27,3 +27,56 @@ if err != nil {
     return
 }
 ```
+
+## Implementing the handlers
+Usually, handlers are put in a separate package.
+
+```
+func deleteHandler(w http.ResponseWriter, r *http.Request) {
+    // Get telephone
+    paramStr := strings.Split(r.URL.Path, "/")
+    fmt.Println("Path:", paramStr)
+    if len(paramStr) < 3 {
+        w.WriteHeader(http.StatusNotFound)
+        fmt.Fprintln(w, "Not found: "+r.URL.Path)
+        return
+    }
+```
+
+If we do no have enough parameters, we should send an error message back to the client with the desired HTTP code, which in this case is http.StatusNotFound.
+
+```
+log.Println("Serving:", r.URL.Path, "from", r.Host)
+```
+
+This is where the HTTP server sends data to log files - this mainly happens for debugging reasons.
+
+```
+mux := http.NewServeMux()
+s := &http.Server{
+    Addr: PORT,
+    Handler: mux,
+    IdleTimeout: 10 * time.Second,
+    ReadTimeout: time.Second,
+    WriteTimeout: time.Second,
+}
+
+mux.Handle("/list", http.HandlerFunc(listHandler))
+mux.Handle("/insert/", http.HandlerFunc(insertHandler))
+mux.Handle("/insert", http.HandlerFunc(insertHandler))
+
+```
+
+Here, we store the parameters of the HTTP server in the http.Server structure and use our own http.NewServeMux() instead of the default one.
+
+```
+err = s.ListenAndServe()
+if err != nil {
+    fmt.Println(err)
+    return
+}
+```
+The ListenAndServe() method starts the HTTP server using the parameters defined previously in the http.Server structure.
+
+
+
