@@ -78,5 +78,7 @@ if err != nil {
 ```
 The ListenAndServe() method starts the HTTP server using the parameters defined previously in the http.Server structure.
 
+\* The http package uses multiple goroutines for interacting with clients - in practice, this means that you application runs concurrently!
+
 
 
