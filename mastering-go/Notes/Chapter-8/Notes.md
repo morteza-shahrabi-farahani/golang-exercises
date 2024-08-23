@@ -95,6 +95,7 @@ The runtime/metrics package makes metrics exported by the Go runtime available t
 
 \* You might ask, "why not use a normal Go binary instead of a Docker image?" The answer is simple: Docker images can be put in docker-compose.yml files and can be deployed using Kubernetes. The same is not true about Go binaries.
 
+\* If you want a program with watching metrics, such program should definitely have at least two goroutines: one for running the HTTP server and another one for collecting the metrics. Usually, the HTTP server is on the goroutine that runs the main() function and the metric collection happens in a user-defined goroutine.
 
 
 
