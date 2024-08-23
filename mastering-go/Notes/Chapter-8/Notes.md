@@ -80,5 +80,23 @@ The ListenAndServe() method starts the HTTP server using the parameters defined 
 
 \* The http package uses multiple goroutines for interacting with clients - in practice, this means that you application runs concurrently!
 
+## Exposing metrics to Prometeus
+The list of supported data types for metrics is the following:
+
+Counter: Counters are usually used for representing cumulative values such as the number of requests served so far, the total number of errors, etc.
+
+Gauge: Gauges are usually used for representing values that can go up or down such as the number of requests, time durations, etc.
+
+Histogram: A histogram is used for sampling observations and creating counts and buckets. Histograms are usually used for counting request durations, response times, etc. 
+
+Summary: A summary is like a histogram but can also calculate quantiles over sliding windows that work with times.
+
+The runtime/metrics package makes metrics exported by the Go runtime available to the developer. If you want to collect all available metrics, you should use metrics.All().
+
+\* You might ask, "why not use a normal Go binary instead of a Docker image?" The answer is simple: Docker images can be put in docker-compose.yml files and can be deployed using Kubernetes. The same is not true about Go binaries.
+
+
+
+
 
 
