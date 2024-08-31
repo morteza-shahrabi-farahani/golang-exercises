@@ -97,6 +97,52 @@ The runtime/metrics package makes metrics exported by the Go runtime available t
 
 \* If you want a program with watching metrics, such program should definitely have at least two goroutines: one for running the HTTP server and another one for collecting the metrics. Usually, the HTTP server is on the goroutine that runs the main() function and the metric collection happens in a user-defined goroutine.
 
+```
+FROM golang:alpine AS builder
+```
+
+golang:alpine always contains the latest Go version as long as you update it regularly.
+
+```
+scrape_configs:
+    scrape_interval: 5s
+```
+
+\* Prometheus pulls data every 5 seconds, according to the value of the scrape_interval field.
+
+\* You should put all Docker images under the same network.
+
+\* Prometheus and Grafana work very well together so we are going to use Grafana for the visualization part.
+
+## Developing web clients
+```
+data, err := http.Get(URL)
+```
+
+In the previous statement we get the URL and get its data using http.Get(), which returns an *http.Response and an error variable.
+
+### Using http.NewRequest() to improve the client
+
+```
+request, err := http.NewRequest(http.MethodGet, URL.string(), nil)
+```
+
+The http.NewRequest() function returns an http.Request object given a method, a URL, and an optional body. The http.MethodGet parameter defines that we want to retrieve the data using a GET HTTP method whereas URL.string() returns the string value of an http.URL variable.
+
+```
+httpData, err := c.Do(request)
+```
+
+The http.Do() function sends an HTTP request (http.Request) using an http.Client and gets an http.REsponse. So, http.Do() doest the job of http.Get() in a more detailed way. 
+
+```
+if data.StatusCode != http.StatusOK {
+    fmt.Println("success")
+    return
+}
+```
+The httpData.Status holds the HTTP status code of the response. Checking the HTTP status code is considered a good practice. Therefore, if everything is OK with the server response, we continue by reading the data.
+
 
 
 
