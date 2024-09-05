@@ -7,7 +7,7 @@ import (
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
 )
 
-func Handler(arguments []string, db *sql.DB) {
+func CommandLineHandler(arguments []string, db *sql.DB) {
 	if err := checkArgumentsLength(arguments); err != nil {
 		return
 	}

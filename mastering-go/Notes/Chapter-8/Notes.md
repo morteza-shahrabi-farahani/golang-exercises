@@ -80,6 +80,12 @@ The ListenAndServe() method starts the HTTP server using the parameters defined 
 
 \* The http package uses multiple goroutines for interacting with clients - in practice, this means that you application runs concurrently!
 
+\* printf: printf function is used to print character stream of data on stdout console. 
+\* sprintf: String print function instead of printing on console store it on char buffer which is specified in sprintf.
+\* fprintf: fprintf is used to print the string content in file but not on the stdout console.
+
+\* The ResponseWriter is an interface for http method. It has two methods, Write and WriteHeader. This interface is also an io.writer type. Because it implements the Write method inside. So you can call fmt.Fprintf for responseWriter variables. Because inside the fmt.Fprintf function, it calls the Write method of the io.writer type. 
+
 ## Exposing metrics to Prometeus
 The list of supported data types for metrics is the following:
 

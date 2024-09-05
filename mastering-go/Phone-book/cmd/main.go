@@ -22,5 +22,5 @@ func main() {
 
 	defer db.Close()
 
-	controller.Handler(arguments, db)
+	controller.CommandLineHandler(arguments, db)
 }
