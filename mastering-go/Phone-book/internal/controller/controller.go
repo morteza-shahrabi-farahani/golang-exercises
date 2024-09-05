@@ -1,13 +1,12 @@
 package controller
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
 )
 
-func CommandLineHandler(arguments []string, db *sql.DB) {
+func CommandLineHandler(arguments []string) {
 	if err := checkArgumentsLength(arguments); err != nil {
 		return
 	}
@@ -19,24 +18,24 @@ func CommandLineHandler(arguments []string, db *sql.DB) {
 			return
 		}
 
-		usersList, err := phonebook.GetList(db)
-		if err != nil {
-			fmt.Println(err)
+		usersList, appErr := phonebook.GetList()
+		if appErr != nil {
+			fmt.Println(appErr.Message)
 			return
 		}
 
 		result, err := phonebook.Serach(usersList, arguments[2])
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err.Message)
 			return
 		}
 
 		fmt.Println(result)
 
 	case "list":
-		usersList, err := phonebook.GetList(db)
+		usersList, err := phonebook.GetList()
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err.Message)
 			return
 		}
 
@@ -48,9 +47,9 @@ func CommandLineHandler(arguments []string, db *sql.DB) {
 			return
 		}
 
-		id, err := phonebook.Insert(db, &phonebook.Entry{Name: arguments[2], Surname: arguments[3], PhoneNumber: arguments[4]})
+		id, err := phonebook.Insert(&phonebook.Entry{Name: arguments[2], Surname: arguments[3], PhoneNumber: arguments[4]})
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err.Message)
 			return
 		}
 
@@ -62,8 +61,9 @@ func CommandLineHandler(arguments []string, db *sql.DB) {
 			return
 		}
 
-		if err := phonebook.Delete(db, arguments[2]); err != nil {
-			fmt.Println(err)
+		err := phonebook.Delete(arguments[2])
+		if err != nil {
+			fmt.Println(err.Message)
 			return
 		}
 
