@@ -15,4 +15,5 @@ func main() {
 	arguments := os.Args
 
 	controller.CommandLineHandler(arguments)
+	controller.StartHander()
 }

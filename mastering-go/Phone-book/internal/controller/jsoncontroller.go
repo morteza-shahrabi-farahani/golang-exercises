@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
 )
@@ -104,4 +105,25 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, string(jsonResponse))
+}
+
+func StartHander() {
+	mux := http.NewServeMux()
+	s := &http.Server{
+		Addr:         "8000",
+		Handler:      mux,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  10 * time.Second,
+	}
+
+	mux.Handle("/list", http.HandlerFunc(listHandler))
+	mux.Handle("/insert", http.HandlerFunc(insertHandler))
+	mux.Handle("/delete/{id}", http.HandlerFunc(deleteHandler))
+	mux.Handle("/search/", http.HandlerFunc(searchHandler))
+
+	err := s.ListenAndServe()
+	if err != nil {
+		return
+	}
 }
