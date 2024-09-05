@@ -143,7 +143,3 @@ if data.StatusCode != http.StatusOK {
 ```
 The httpData.Status holds the HTTP status code of the response. Checking the HTTP status code is considered a good practice. Therefore, if everything is OK with the server response, we continue by reading the data.
 
-
-
-
-
