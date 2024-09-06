@@ -3,9 +3,10 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
@@ -14,16 +15,22 @@ import (
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Serving:", r.URL.Path, "from ", r.Host)
 	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprintf(w, "This page does not exist :(")
+	fmt.Fprint(w, "This page does not exist :(")
 }
 
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
-	phoneNumber := r.PathValue("phone-number")
+	inputParameter := r.PathValue("id")
 
-	err := phonebook.Delete(phoneNumber)
+	id, err := strconv.Atoi(inputParameter)
 	if err != nil {
-		w.WriteHeader(int(err.StatusCode))
-		fmt.Fprintf(w, err.Message)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err.Error())
+	}
+
+	appErr := phonebook.Delete(int64(id))
+	if err != nil {
+		w.WriteHeader(int(appErr.StatusCode))
+		fmt.Fprint(w, appErr.Message)
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -33,26 +40,26 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 	entries, appErr := phonebook.GetList()
 	if appErr != nil {
 		w.WriteHeader(int(appErr.StatusCode))
-		fmt.Fprintf(w, appErr.Message)
+		fmt.Fprint(w, appErr.Message)
 	}
 
 	w.WriteHeader(http.StatusOK)
-	jsonResponse, err := json.MarshalIndent(entries, "", " ")
+	jsonResponse, err := json.MarshalIndent(phonebook.ListResponse{Entries: entries}, "", " ")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, err.Error())
+		fmt.Fprint(w, err.Error())
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, string(jsonResponse))
+	fmt.Fprint(w, string(jsonResponse))
 }
 
 func insertHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, err.Error())
+		fmt.Fprint(w, err.Error())
 	}
 
 	var entry phonebook.Entry
@@ -60,57 +67,57 @@ func insertHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &entry)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, err.Error())
+		fmt.Fprint(w, err.Error())
 	}
 
 	id, appErr := phonebook.Insert(&entry)
 	if appErr != nil {
 		w.WriteHeader(int(appErr.StatusCode))
-		fmt.Fprintf(w, appErr.Message)
+		fmt.Fprint(w, appErr.Message)
 	}
 
 	w.WriteHeader(http.StatusOK)
-	jsonResponse, err := json.MarshalIndent(id, "", " ")
+	jsonResponse, err := json.MarshalIndent(phonebook.InsertResponse{ID: id}, "", " ")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, err.Error())
+		fmt.Fprint(w, err.Error())
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, string(jsonResponse))
+	fmt.Fprint(w, string(jsonResponse))
 }
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
 	data, appErr := phonebook.GetList()
 	if appErr != nil {
 		w.WriteHeader(int(appErr.StatusCode))
-		fmt.Fprintf(w, appErr.Message)
+		fmt.Fprint(w, appErr.Message)
 	}
 
 	telephone := r.URL.Query().Get("phone-number")
 	entry, appErr := phonebook.Serach(data, telephone)
 	if appErr != nil {
 		w.WriteHeader(int(appErr.StatusCode))
-		fmt.Fprintf(w, appErr.Message)
+		fmt.Fprint(w, appErr.Message)
 	}
 
 	w.WriteHeader(http.StatusOK)
 	jsonResponse, err := json.MarshalIndent(entry, "", " ")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, err.Error())
+		fmt.Fprint(w, err.Error())
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, string(jsonResponse))
+	fmt.Fprint(w, string(jsonResponse))
 }
 
 func StartHander() {
 	mux := http.NewServeMux()
-	s := &http.Server{
-		Addr:         "8000",
+	server := &http.Server{
+		Addr:         ":8001",
 		Handler:      mux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -122,8 +129,11 @@ func StartHander() {
 	mux.Handle("/delete/{id}", http.HandlerFunc(deleteHandler))
 	mux.Handle("/search/", http.HandlerFunc(searchHandler))
 
-	err := s.ListenAndServe()
+	fmt.Println("Ready to serve at", "8001")
+
+	err := server.ListenAndServe()
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 }

@@ -6,16 +6,16 @@ type PhoeBookError struct {
 }
 
 type Entry struct {
-	ID          int64
-	Name        string
-	Surname     string
-	PhoneNumber string
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Surname     string `json:"surname"`
+	PhoneNumber string `json:"phone_number"`
 }
 
 type ListResponse struct {
-	entries []Entry
+	Entries []Entry `json:"entries"`
 }
 
 type InsertResponse struct {
-	id int64
+	ID int64 `json:"id"`
 }

@@ -28,6 +28,8 @@ if err != nil {
 }
 ```
 
+Part of the net/http package is the ServeMux type, which is an HTTP request multiplexer that provides a slightly different way of defining handler functions and endpoints than the default one. So, if we do not create and configure our own ServeMux variable, then http.HandleFunc() used DefaultServeMux, which is the default ServeMux.
+
 ## Implementing the handlers
 Usually, handlers are put in a separate package.
 
@@ -68,6 +70,7 @@ mux.Handle("/insert", http.HandlerFunc(insertHandler))
 ```
 
 Here, we store the parameters of the HTTP server in the http.Server structure and use our own http.NewServeMux() instead of the default one.
+The HandlerFunc type is an adapter to allow the use of ordinary functions as HTTP handlers. If f is a function with the appropriate signature, HandlerFunc(f) is a [Handler] that calls f.
 
 ```
 err = s.ListenAndServe()

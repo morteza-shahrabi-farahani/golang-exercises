@@ -43,12 +43,8 @@ func Insert(entry *Entry) (int64, *PhoeBookError) {
 
 	defer db.Close()
 
-	result, err := db.Exec("INSERT INTO phone_book (name, surname, phone_number) VALUES ($1, $2, $3)", entry.Name, entry.Surname, entry.PhoneNumber)
-	if err != nil {
-		return 0, &PhoeBookError{Message: err.Error(), StatusCode: http.StatusInternalServerError}
-	}
-
-	id, err := result.LastInsertId()
+	var id int64
+	err = db.QueryRow("INSERT INTO phone_book (name, surname, phone_number) VALUES ($1, $2, $3) RETURNING id", entry.Name, entry.Surname, entry.PhoneNumber).Scan(&id)
 	if err != nil {
 		return 0, &PhoeBookError{Message: err.Error(), StatusCode: http.StatusInternalServerError}
 	}
@@ -56,7 +52,7 @@ func Insert(entry *Entry) (int64, *PhoeBookError) {
 	return id, nil
 }
 
-func Delete(phoneNumber string) *PhoeBookError {
+func Delete(id int64) *PhoeBookError {
 	db, err := db.ConnectDB()
 	if err != nil {
 		return &PhoeBookError{Message: err.Error(), StatusCode: http.StatusInternalServerError}
@@ -64,7 +60,7 @@ func Delete(phoneNumber string) *PhoeBookError {
 
 	defer db.Close()
 
-	result, err := db.Exec("DELETE FROM phone_book WHERE phone_number = ?", phoneNumber)
+	result, err := db.Exec("DELETE FROM phone_book WHERE id = ?", id)
 	if err != nil {
 		return &PhoeBookError{Message: err.Error(), StatusCode: http.StatusInternalServerError}
 	}

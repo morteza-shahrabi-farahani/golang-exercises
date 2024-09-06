@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
 )
@@ -61,9 +62,15 @@ func CommandLineHandler(arguments []string) {
 			return
 		}
 
-		err := phonebook.Delete(arguments[2])
+		id, err := strconv.Atoi(arguments[2])
 		if err != nil {
-			fmt.Println(err.Message)
+			fmt.Println(err)
+			return
+		}
+
+		appErr := phonebook.Delete(int64(id))
+		if err != nil {
+			fmt.Println(appErr.Message)
 			return
 		}
 
