@@ -152,3 +152,19 @@ if data.StatusCode != http.StatusOK {
 ```
 The httpData.Status holds the HTTP status code of the response. Checking the HTTP status code is considered a good practice. Therefore, if everything is OK with the server response, we continue by reading the data.
 
+## Setting the timeout period on the server side
+This section presents a technique for timing out network connections that take too long to finish on the server side. This is much more important than the client side because a server with too many open connections might not be able to process more requests unless some of the already open connections close. This usually happens for two reasons. The first reason is software bugs, and the second reason is when a server is experiencing a Denial of Service (DoS) attack!
+
+```
+mux := http.NewServeMux()
+server := &http.Server{
+    Addr:         ":8001",
+    Handler:      mux,
+    ReadTimeout:  10 * time.Second,
+    WriteTimeout: 10 * time.Second,
+    IdleTimeout:  10 * time.Second,
+}
+```
+
+This is where the timeout periods are defined. Note that you can define timeout periods for both reading and writing processes. The value of the ReadTimeout field specifies the maximum duration allowed to read the entire client request, including the body, whereas the value of the WriteTimeout field specifies the maximum time duration before timing out the sending of the client response. 
+
