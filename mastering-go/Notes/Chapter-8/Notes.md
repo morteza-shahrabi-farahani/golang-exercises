@@ -28,6 +28,8 @@ if err != nil {
 }
 ```
 
+Part of the net/http package is the ServeMux type, which is an HTTP request multiplexer that provides a slightly different way of defining handler functions and endpoints than the default one. So, if we do not create and configure our own ServeMux variable, then http.HandleFunc() used DefaultServeMux, which is the default ServeMux.
+
 ## Implementing the handlers
 Usually, handlers are put in a separate package.
 
@@ -68,6 +70,7 @@ mux.Handle("/insert", http.HandlerFunc(insertHandler))
 ```
 
 Here, we store the parameters of the HTTP server in the http.Server structure and use our own http.NewServeMux() instead of the default one.
+The HandlerFunc type is an adapter to allow the use of ordinary functions as HTTP handlers. If f is a function with the appropriate signature, HandlerFunc(f) is a [Handler] that calls f.
 
 ```
 err = s.ListenAndServe()
@@ -79,6 +82,12 @@ if err != nil {
 The ListenAndServe() method starts the HTTP server using the parameters defined previously in the http.Server structure.
 
 \* The http package uses multiple goroutines for interacting with clients - in practice, this means that you application runs concurrently!
+
+\* printf: printf function is used to print character stream of data on stdout console. 
+\* sprintf: String print function instead of printing on console store it on char buffer which is specified in sprintf.
+\* fprintf: fprintf is used to print the string content in file but not on the stdout console.
+
+\* The ResponseWriter is an interface for http method. It has two methods, Write and WriteHeader. This interface is also an io.writer type. Because it implements the Write method inside. So you can call fmt.Fprintf for responseWriter variables. Because inside the fmt.Fprintf function, it calls the Write method of the io.writer type. 
 
 ## Exposing metrics to Prometeus
 The list of supported data types for metrics is the following:
@@ -143,9 +152,21 @@ if data.StatusCode != http.StatusOK {
 ```
 The httpData.Status holds the HTTP status code of the response. Checking the HTTP status code is considered a good practice. Therefore, if everything is OK with the server response, we continue by reading the data.
 
+## Setting the timeout period on the server side
+This section presents a technique for timing out network connections that take too long to finish on the server side. This is much more important than the client side because a server with too many open connections might not be able to process more requests unless some of the already open connections close. This usually happens for two reasons. The first reason is software bugs, and the second reason is when a server is experiencing a Denial of Service (DoS) attack!
 
+```
+mux := http.NewServeMux()
+server := &http.Server{
+    Addr:         ":8001",
+    Handler:      mux,
+    ReadTimeout:  10 * time.Second,
+    WriteTimeout: 10 * time.Second,
+    IdleTimeout:  10 * time.Second,
+}
+```
 
-
+This is where the timeout periods are defined. Note that you can define timeout periods for both reading and writing processes. The value of the ReadTimeout field specifies the maximum duration allowed to read the entire client request, including the body, whereas the value of the WriteTimeout field specifies the maximum time duration before timing out the sending of the client response. 
 
 
 
