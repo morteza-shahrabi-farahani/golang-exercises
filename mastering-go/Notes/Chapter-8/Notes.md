@@ -168,3 +168,5 @@ server := &http.Server{
 
 This is where the timeout periods are defined. Note that you can define timeout periods for both reading and writing processes. The value of the ReadTimeout field specifies the maximum duration allowed to read the entire client request, including the body, whereas the value of the WriteTimeout field specifies the maximum time duration before timing out the sending of the client response. 
 
+
+

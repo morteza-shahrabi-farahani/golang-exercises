@@ -24,3 +24,18 @@ if r.Method != http.MethodPOST {
 ```
 
 The http.Error() function sends a reply to the client request that includes the specified error message, which should be in plain text, as well as the desired HTTP code.
+
+## Using gorilla/mux 
+The gorilla/mux package is a popular and powerful alternative to the default Go router that allows you to match incoming requests to their respective handler.
+
+r.HandleFunc("/url", UrlHandlerFunction).Methods(http.MethodPut):
+This example shows how you can tell Gorilla to match a specific HTTP method, which saves you from having to write code to do that manually. 
+
+s.HandleFunc("/users/{id:[0-9]+}"), HandlerFunction): This last
+example shows that you can define a variable in a path using a name (id)
+and a pattern and Gorilla does the matching for you! If there is not a regular
+expression, then the match is going to be anything from the beginning slash
+to the next slash in the path.
+
+### The use of subrouters
+A subrouter is a nested route that will only be examined for potential matches if the parent route matches the parameters of the subrouter. The good thing is that the paent route can contain conditions that are common among all paths that ae defined under a subrouter, which includes hots, path prefixes, and, as it happens in our case, HTTP request methods.
