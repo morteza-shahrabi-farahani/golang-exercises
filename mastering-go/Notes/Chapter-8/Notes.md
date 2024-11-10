@@ -89,7 +89,7 @@ The ListenAndServe() method starts the HTTP server using the parameters defined 
 
 \* The ResponseWriter is an interface for http method. It has two methods, Write and WriteHeader. This interface is also an io.writer type. Because it implements the Write method inside. So you can call fmt.Fprintf for responseWriter variables. Because inside the fmt.Fprintf function, it calls the Write method of the io.writer type. 
 
-## Exposing metrics to Prometeus
+## Exposing metrics to Prometheus
 The list of supported data types for metrics is the following:
 
 Counter: Counters are usually used for representing cumulative values such as the number of requests served so far, the total number of errors, etc.
