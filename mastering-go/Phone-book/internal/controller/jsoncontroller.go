@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
@@ -128,6 +129,7 @@ func StartHander() {
 	mux.Handle("/insert", http.HandlerFunc(insertHandler))
 	mux.Handle("/delete/{id}", http.HandlerFunc(deleteHandler))
 	mux.Handle("/search/", http.HandlerFunc(searchHandler))
+	mux.Handle("/metrics", promhttp.Handler())
 
 	fmt.Println("Ready to serve at", "8001")
 
