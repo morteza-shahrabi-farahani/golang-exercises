@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
+	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/metrics"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -138,4 +139,8 @@ func StartHander() {
 		fmt.Println(err)
 		return
 	}
+
+	go func() {
+		http.ListenAndServe(metrics.METRICS_PORT, nil)
+	}()
 }

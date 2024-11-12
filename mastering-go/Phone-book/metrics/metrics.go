@@ -35,5 +35,7 @@ func RegisterMetrics() []prometheus.Collector {
 		},
 	)
 
+	counterMetric.Add(5)
+
 	return []prometheus.Collector{summaryMetric, histogramMetric, gaugeMetric, counterMetric}
 }
