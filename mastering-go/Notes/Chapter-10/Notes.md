@@ -68,7 +68,7 @@ There exist three main ways to save the files you upload:
 
 \* If we had a scenario which we can have a function which we can reuse it in other parts of the program, it would better to seperate the code scope of this function for reusability.
 
-## Using Swagger fir REST API documentation
+## Using Swagger for REST API documentation
 
 The OpenAPI specification, which is also called the Swagger Specification, is a specification for describing, producing, consuming, and visualizing RESTful web services.
 
@@ -77,4 +77,35 @@ Put simply, Swagger is a representation of your RESTful API. Swagger reads the a
 We are going to use g-swagger, which brings to Go a way of working with the Swagger API. The extra content for creating the documentation for the REST API is put in the Go source files as Go comments. The utility reads these comments and generates the documentation! However, all comments should follow certain rules and comply with the supported grammar and conventions. 
 
 First, we need to install the go-swagger binary bo following the instructions found at https://goswagger.io/install.html
+
+### Generating the documentation file
+
+```
+swagger generate spec --scan-models -o ./swagger.yaml
+```
+
+What the previous command does is tell swagger to generate a Swagger spec document from a Go application that resides in the directory where we run swagger. The --scan-models option tells swagger to include models that were annotated with swagger:model. The result of the previous command is a file named swagger.yaml, as specified by the -o opotion.
+
+### Serving the documentation file
+
+Middleware functions are functions with a short amount of code that get a request, do something with it, and pass it to another middleware or to the last handler function. Gorilla/mux allows you to attach one or more middleware functions to a router using Router.Use(). If a match if found, the relevant middleware functions are executed in the order they were added to the router (or subrouter)
+
+```
+mux := mux.NewRouter()
+mus.Use(middleware)
+```
+
+As middleWare() was added to the main router (mux.Use(middleWare)), it is always executed before any subrouter middleware function. Additionally, middleWare() is executed with all request,s whereas anotherMiddleWare() is executed for the getMux subrouter only.
+
+```
+opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+```
+This is where we define the options of a middleware function that is going to be used when serving /swagger.yaml. As discussed earlier, this middleware function renders the YAML code.
+```
+sh := middleware.Redoc(opts, nil)
+```
+This is how we define a handler function that is based on the middleware function. This middleware function does not require the use of the Use() method.
+```
+getMux.Handle("/docs", sh)
+```
 
