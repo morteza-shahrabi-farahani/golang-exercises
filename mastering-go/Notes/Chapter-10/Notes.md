@@ -68,3 +68,13 @@ There exist three main ways to save the files you upload:
 
 \* If we had a scenario which we can have a function which we can reuse it in other parts of the program, it would better to seperate the code scope of this function for reusability.
 
+## Using Swagger fir REST API documentation
+
+The OpenAPI specification, which is also called the Swagger Specification, is a specification for describing, producing, consuming, and visualizing RESTful web services.
+
+Put simply, Swagger is a representation of your RESTful API. Swagger reads the appropriate code annotations and creates the OpenAPI file. To be able to document a REST API using Swagger, you basically have two choices. First, writing the OpenAPI Specification file on your own (manually), or adding annotations in the source code that help Swagger generate the OpenAPI Specification file for you (automatically).
+
+We are going to use g-swagger, which brings to Go a way of working with the Swagger API. The extra content for creating the documentation for the REST API is put in the Go source files as Go comments. The utility reads these comments and generates the documentation! However, all comments should follow certain rules and comply with the supported grammar and conventions. 
+
+First, we need to install the go-swagger binary bo following the instructions found at https://goswagger.io/install.html
+
