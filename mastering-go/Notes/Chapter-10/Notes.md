@@ -39,3 +39,32 @@ to the next slash in the path.
 
 ### The use of subrouters
 A subrouter is a nested route that will only be examined for potential matches if the parent route matches the parameters of the subrouter. The good thing is that the paent route can contain conditions that are common among all paths that ae defined under a subrouter, which includes hots, path prefixes, and, as it happens in our case, HTTP request methods.
+
+## Working with multiple REST API versions
+
+There exist various approaches on how to implement REST API versioning, including the following:
+
+* Using a custom HTTP header (version-used) to define the used version
+
+* Using a different subdomain for each version (v1.servername and v2.servername)
+
+* Using a combination of Accept and Content-Type headers -this method is based on content negotiation
+
+* Using a different path for each version (/v1 and /v2 if the RESTful server supports two REST API versions.)
+
+* Using a query parameter to reference the desired version (.../endpoint?version=v1 or .../endpoint?v=1)
+
+There is no correct answer for how to implement REST API versioning. Use what seems more natural to youou and your users.
+
+## Uploading and downloading binary files
+
+There exist three main ways to save the files you upload:
+
+* On the local filesystem
+
+* On a database management system that supports the storing of binary files.
+
+* On the clouad using a cloud provider
+
+\* If we had a scenario which we can have a function which we can reuse it in other parts of the program, it would better to seperate the code scope of this function for reusability.
+
