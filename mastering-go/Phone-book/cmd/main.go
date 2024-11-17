@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/docs"
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/controller"
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/metrics"

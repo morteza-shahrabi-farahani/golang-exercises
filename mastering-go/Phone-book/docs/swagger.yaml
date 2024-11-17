@@ -1,0 +1,130 @@
+definitions:
+  phonebook.Entry:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      phone_number:
+        type: string
+      surname:
+        type: string
+    type: object
+  phonebook.InsertResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+  phonebook.ListResponse:
+    properties:
+      entries:
+        items:
+          $ref: '#/definitions/phonebook.Entry'
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /:
+    get:
+      description: Respond with a 404 error for unknown routes
+      produces:
+      - text/plain
+      responses:
+        "404":
+          description: This page does not exist
+          schema:
+            type: string
+      summary: Handle invalid routes
+      tags:
+      - misc
+  /delete/{id}:
+    delete:
+      description: Delete an entry by its ID
+      parameters:
+      - description: Entry ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Deleted successfully
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete a phonebook entry
+      tags:
+      - phonebook
+  /insert:
+    post:
+      consumes:
+      - application/json
+      description: Add a new entry to the phonebook
+      parameters:
+      - description: Phonebook Entry
+        in: body
+        name: entry
+        required: true
+        schema:
+          $ref: '#/definitions/phonebook.Entry'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/phonebook.InsertResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Insert a new phonebook entry
+      tags:
+      - phonebook
+  /list:
+    get:
+      description: Get all phonebook entries
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/phonebook.ListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: List phonebook entries
+      tags:
+      - phonebook
+  /search:
+    get:
+      description: Search for an entry by phone number
+      parameters:
+      - description: Phone number to search
+        in: query
+        name: phone-number
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/phonebook.Entry'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Search phonebook entries
+      tags:
+      - phonebook
+swagger: "2.0"
