@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	httpSwagger "github.com/swaggo/http-swagger"
+
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/metrics"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -38,6 +40,14 @@ func deleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// listHandler
+// @Summary      List phonebook entries
+// @Description  Get all phonebook entries
+// @Tags         phonebook
+// @Produce      json
+// @Success      200  {object}  phonebook.ListResponse
+// @Failure      500  {string}  string  "Internal Server Error"
+// @Router       /list [get]
 func listHandler(w http.ResponseWriter, r *http.Request) {
 	entries, appErr := phonebook.GetList()
 	if appErr != nil {
@@ -131,6 +141,8 @@ func StartHander() {
 	mux.Handle("/delete/{id}", http.HandlerFunc(deleteHandler))
 	mux.Handle("/search/", http.HandlerFunc(searchHandler))
 	mux.Handle("/metrics", promhttp.Handler())
+
+	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 
 	fmt.Println("Ready to serve at", "8001")
 
