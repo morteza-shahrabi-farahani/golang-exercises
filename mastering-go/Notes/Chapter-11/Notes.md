@@ -31,3 +31,119 @@ Go follows certain conventions reggarding benchmarking. The most important conve
 
 \* Benchmark functions use testing.B variables whereas testing functions use testing.T variables. 
 
+How often do we need to create benchmark functions? The answer is simple: when something runs slower than needed and/ or when you want to choose between two or more implementations.
+
+## Prifiling code
+
+Profiling is a process of dynamic program analysis that measures various values related to program execution to give you a better understanding of the program behavior.
+
+The runtime/pprof standard Go package is used for profilling all kinds of applications apart from HTTP servers. The high-level net/http/pprof package should be used when you want to profile a wweb application written in Go.
+
+```
+pprof.StartCPUProfile(cpuFile)
+defer pprof.StopCPUProfile()
+```
+
+The previous code is about collecting CPU profiling data. pprof.StartCPUProfile()
+starts the collecting, which is stopped with the pprof.StopCPUProfile() call.
+
+And finally we should use go tool pprof to process these files. You can also create PDF output of the profiling data from the shell of the Go profiler using the pdf command. It gives you richer overview of the collected data.
+
+### Profiling an HTTP server
+
+```
+r.HandleFunc("/debug/pprof/", pprof.Index)
+r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+r.HandleFunc("/debug/pprof/profile", pprof.Profile)
+r.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+r.HandleFunc("/debug/pprof/trace", pprof.Trace)
+```
+
+All previous statements install the handlers for the HTTP profiler.
+
+Go tool pprof comes with a web user interface that you can start as go tool pprof -http=[host]:[port] aProfile.out.
+
+![Local Image](./Go-profiller.png "Go profiler web interface")
+
+## The go tool trace utility 
+
+Code tracing is a process that allows you to learn information such as the operation of the garbage collector, the lifetime of goroutines, the activiiity of each logical processor, and the number of operating system threads used.
+
+The go tool trace utility is a tool for viewing the data stored in trace files, which can be generated in any one of the following three ways.
+
+* WIth the runtime/trace package
+* With the net/http/pprof package
+* With the go test -trace command
+
+```
+err = trace.Start(f)
+if err != nil {
+fmt.Println(err)
+    return
+}
+
+defer trace.Stop()
+```
+
+We start the tracing process using trace.Start(). When we are done, we call the trace.Stop() function.
+
+```
+go tool trace /path/ToTemporary/Directory/traceCLA.out
+```
+
+The last command automatically starts a web server and opens the web interface of
+the trace tool on your default web browser.
+
+Although go tool trace is very handy and powerful, it cannot solve every kind of performance problem. There are times where go tool pprof is more appropriate, especially when we want to reveal where our code spends most of its time.
+
+As it happens with profiling, collecting tracing data for an HTTP server is a slightly different process.
+
+### Tracing a web server from a client
+
+```
+trace := &httptrace.ClientTrace{
+    GotFirstResponseByte: func() {
+        fmt.Println("First response byte!")
+    },
+
+    GotConn: func(connInfo httptrace.GotConnInfo) {
+        fmt.Printf("Got Conn: %+v\n", connInfo)
+    },
+
+    DNSDone: func(dnsInfo httptrace.DNSDoneInfo) {
+        fmt.Printf("DNS Info: %+v\n", dnsInfo)
+    },
+
+    ConnectStart: func(network, addr string) {
+        fmt.Println("Dial start")
+    },
+
+    ConnectDone: func(network, addr string, err error) {
+        fmt.Println("Dial done")
+    },
+
+    WroteHeaders: func() {
+        fmt.Println("Wrote headers")
+    },
+}
+```
+
+The preceding code is all about tracing HTTP requests. The httptrace.ClientTrace
+structure defines the events that interest us, which are GotFirstResponseByte,
+GotConn, DNSDone, ConnectStart, ConnectDone, and WroteHeaders. When such an
+event occurs, the relevant code is executed. You can find more information about the supported events and their purpose in the documentation of the net/http/httptrace package.
+
+```
+req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
+fmt.Println("Requesting data from server!")
+_, err := http.DefaultTransport.RoundTrip(req)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+```
+
+The httptrace.WithClientTrace() function returns a new context value based
+on the given parent context while http.DefaultTransport.RoundTrip() wraps the
+request with the context value in order to keep track of the request.
+
