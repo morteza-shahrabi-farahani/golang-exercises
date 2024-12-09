@@ -175,10 +175,27 @@ The call for quick.Check() automatically generates random numbers based on the s
 
 By coverage, we discover blocks of code or single code statements that are not being executed by testing functions.
 
+```
 go test -cover *.go
+```
 
 we can generate a test coverage report. The next command generates the code coverage report.
 
+```
 go test -coverprofile=coverage.out *.go
+```
 
 The HTML output can be seen in your favorite web browser by running go tool cover -html=coverage.out
+
+### Finding unreachable Go code
+
+Sometimes, a wrongly implemented if or a misplaced return statement can create blocks of code that are unreachable, that is, blocks of code that are not going to be executed at all. As this is a logical kind of error, which means that it is not going to get caught by the compiler, we need to find a way of discovering it.
+
+The go vet tool, which examines Go source code and reports suspicious constructs, can help with that.
+
+```
+go ven cannotReach.go
+```
+
+If you need more advanced tools, have a look at staticcheck.
+
