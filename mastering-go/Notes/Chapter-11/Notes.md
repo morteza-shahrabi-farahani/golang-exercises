@@ -199,3 +199,5 @@ go ven cannotReach.go
 
 If you need more advanced tools, have a look at staticcheck.
 
+\* Your example test functions appear  in the documentation of the package, if you decide to generate package documentation.
+
