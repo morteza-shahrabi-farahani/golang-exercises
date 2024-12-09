@@ -147,3 +147,38 @@ The httptrace.WithClientTrace() function returns a new context value based
 on the given parent context while http.DefaultTransport.RoundTrip() wraps the
 request with the context value in order to keep track of the request.
 
+## testing
+
+### The testing/quick package
+There are times where you need to create testing data without human intervention. The Go standard library offers the testing/quick package, which can be used for black box testing (a software testing method that checks the functionality of an application or function wiithout any prior knowledge of its internal working)
+
+```
+var N = 1000000
+
+func TestWithItself(t *testing.T) {
+    condition := func(a, b Point2D) bool {
+        return Add(a, b) == Add(b, a)
+    }
+
+    err := quick.Check(condition, &quick.Config{MaxCount: N})
+    if err != nil {
+        t.Errorf("Error: %v", err)
+    }
+}
+```
+
+The call for quick.Check() automatically generates random numbers based on the signature of its first argument, which is a function defined earlier.
+
+\* Running go test -v *.go -timeout 1s tells go test that all tests should take at most one second to finish.
+
+### Testing code coverage
+
+By coverage, we discover blocks of code or single code statements that are not being executed by testing functions.
+
+go test -cover *.go
+
+we can generate a test coverage report. The next command generates the code coverage report.
+
+go test -coverprofile=coverage.out *.go
+
+The HTML output can be seen in your favorite web browser by running go tool cover -html=coverage.out
