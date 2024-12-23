@@ -63,5 +63,25 @@ protoapi.RegisterRandomServer(server, randomServer)
 
 The previous statements call protoapi.RegisterRandomServer() to create a gRPC server for our specific service.
 
+## Developing a gRPC client
+
+The gRPC client needs to connect to the gRPC server using grpc.Dial(). Then  we need to specify the gRPC service the client is going to connect to. The grpc.Insecure() function that is passed as a parameter to grpc.Dial() returns a DialOption value that disables security for the client connection.
+
+```
+conn, err := grpc.Dial(port, grpc.WithInsecure())
+if err != nil {
+    fmt.Println("Dial:", err)
+    return
+}
+```
+
+Next, we need to create a gRPC client by calling protoapi.NewRandomClient() and passing the TCP connection to protoapi.NewRandomCleint(). This client variable is going to be used for all interacitons with the server.
+
+```
+client := protoapi.NewRandomClient(conn)
+```
+
+
+
 
 
