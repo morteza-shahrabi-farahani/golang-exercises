@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/http/pprof"
 	"strconv"
 	"time"
 
@@ -186,6 +187,12 @@ func StartHander() {
 	mux.Handle("/delete/{id}", http.HandlerFunc(deleteHandler))
 	mux.Handle("/search/", http.HandlerFunc(searchHandler))
 	mux.Handle("/metrics", promhttp.Handler())
+
+	mux.HandleFunc("/debug/pprof/", pprof.Index)
+	mux.HandleFunc("debug/pprof/cmdline", pprof.Cmdline)
+	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
 	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 
