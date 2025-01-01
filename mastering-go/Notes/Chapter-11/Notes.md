@@ -37,7 +37,7 @@ How often do we need to create benchmark functions? The answer is simple: when s
 
 Profiling is a process of dynamic program analysis that measures various values related to program execution to give you a better understanding of the program behavior.
 
-The runtime/pprof standard Go package is used for profilling all kinds of applications apart from HTTP servers. The high-level net/http/pprof package should be used when you want to profile a wweb application written in Go.
+The runtime/pprof standard Go package is used for profilling all kinds of applications apart from HTTP servers. The high-level net/http/pprof package should be used when you want to profile a web application written in Go.
 
 ```
 pprof.StartCPUProfile(cpuFile)
