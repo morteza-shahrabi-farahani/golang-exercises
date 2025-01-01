@@ -1,4 +1,4 @@
-package phonebook
+package model
 
 type PhoeBookError struct {
 	Message    string

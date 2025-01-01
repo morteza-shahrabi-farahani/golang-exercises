@@ -3,12 +3,12 @@ package main
 import (
 	_ "github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/api"
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/controller"
-	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
+	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/model"
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/metrics"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-type PhoneBook []phonebook.Entry
+type PhoneBook []model.Entry
 
 const CSVFILE = "../data/data.csv"
 

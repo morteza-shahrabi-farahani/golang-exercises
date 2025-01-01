@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
+	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/db"
+	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/model"
 )
 
 func CommandLineHandler(arguments []string) {
@@ -19,13 +20,13 @@ func CommandLineHandler(arguments []string) {
 			return
 		}
 
-		usersList, appErr := phonebook.GetList()
+		usersList, appErr := db.GetList()
 		if appErr != nil {
 			fmt.Println(appErr.Message)
 			return
 		}
 
-		result, err := phonebook.Serach(usersList, arguments[2])
+		result, err := db.Serach(usersList, arguments[2])
 		if err != nil {
 			fmt.Println(err.Message)
 			return
@@ -34,7 +35,7 @@ func CommandLineHandler(arguments []string) {
 		fmt.Println(result)
 
 	case "list":
-		usersList, err := phonebook.GetList()
+		usersList, err := db.GetList()
 		if err != nil {
 			fmt.Println(err.Message)
 			return
@@ -48,7 +49,7 @@ func CommandLineHandler(arguments []string) {
 			return
 		}
 
-		id, err := phonebook.Insert(&phonebook.Entry{Name: arguments[2], Surname: arguments[3], PhoneNumber: arguments[4]})
+		id, err := db.Insert(&model.Entry{Name: arguments[2], Surname: arguments[3], PhoneNumber: arguments[4]})
 		if err != nil {
 			fmt.Println(err.Message)
 			return
@@ -68,7 +69,7 @@ func CommandLineHandler(arguments []string) {
 			return
 		}
 
-		appErr := phonebook.Delete(int64(id))
+		appErr := db.Delete(int64(id))
 		if err != nil {
 			fmt.Println(appErr.Message)
 			return

@@ -12,7 +12,8 @@ import (
 
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/phonebook"
+	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/db"
+	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/internal/model"
 	"github.com/morteza-shahrabi-farahani/golang-exercises/mastering-go/Phone-book/metrics"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -58,7 +59,7 @@ func deleteHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err.Error())
 	}
 
-	appErr := phonebook.Delete(int64(id))
+	appErr := db.Delete(int64(id))
 	if err != nil {
 		w.WriteHeader(int(appErr.StatusCode))
 		fmt.Fprint(w, appErr.Message)
@@ -76,14 +77,14 @@ func deleteHandler(w http.ResponseWriter, r *http.Request) {
 // @Failure      500  {string}  string  "Internal Server Error"
 // @Router       /list [get]
 func listHandler(w http.ResponseWriter, r *http.Request) {
-	entries, appErr := phonebook.GetList()
+	entries, appErr := db.GetList()
 	if appErr != nil {
 		w.WriteHeader(int(appErr.StatusCode))
 		fmt.Fprint(w, appErr.Message)
 	}
 
 	w.WriteHeader(http.StatusOK)
-	jsonResponse, err := json.MarshalIndent(phonebook.ListResponse{Entries: entries}, "", " ")
+	jsonResponse, err := json.MarshalIndent(model.ListResponse{Entries: entries}, "", " ")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -111,7 +112,7 @@ func insertHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err.Error())
 	}
 
-	var entry phonebook.Entry
+	var entry model.Entry
 
 	err = json.Unmarshal(body, &entry)
 	if err != nil {
@@ -119,14 +120,14 @@ func insertHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err.Error())
 	}
 
-	id, appErr := phonebook.Insert(&entry)
+	id, appErr := db.Insert(&entry)
 	if appErr != nil {
 		w.WriteHeader(int(appErr.StatusCode))
 		fmt.Fprint(w, appErr.Message)
 	}
 
 	w.WriteHeader(http.StatusOK)
-	jsonResponse, err := json.MarshalIndent(phonebook.InsertResponse{ID: id}, "", " ")
+	jsonResponse, err := json.MarshalIndent(model.InsertResponse{ID: id}, "", " ")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err.Error())
@@ -147,14 +148,14 @@ func insertHandler(w http.ResponseWriter, r *http.Request) {
 // @Failure      500  {string}  string  "Internal Server Error"
 // @Router       /search [get]
 func searchHandler(w http.ResponseWriter, r *http.Request) {
-	data, appErr := phonebook.GetList()
+	data, appErr := db.GetList()
 	if appErr != nil {
 		w.WriteHeader(int(appErr.StatusCode))
 		fmt.Fprint(w, appErr.Message)
 	}
 
 	telephone := r.URL.Query().Get("phone-number")
-	entry, appErr := phonebook.Serach(data, telephone)
+	entry, appErr := db.Serach(data, telephone)
 	if appErr != nil {
 		w.WriteHeader(int(appErr.StatusCode))
 		fmt.Fprint(w, appErr.Message)
