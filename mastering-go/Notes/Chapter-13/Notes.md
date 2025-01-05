@@ -36,3 +36,51 @@ func Same[T comparable](a, b T) bool {
 
 The same() function uses the predefined comparable constraint insteasd of any. In reality, the comparable constraint is just a predefined interface that includes all data types that can be compared with == or !=.
 
+### Creating constraints
+
+```
+type Numeric interface {
+    type int, int8, int16, int32, int64, float64
+}
+```
+
+In here, we define a new interface called Numeric that specifies the list of supported data types. You can use any data type you want as long as it can be used with the generic function that you are going to implement. In this case, we could have added string or uint to the list of supported data types.
+
+```
+func Add[T Numeric](a, b T) T {
+    return a + b
+}
+```
+
+## Interfaces versus generics
+When using interfaces, we must using a type switch to differentiate between the supported data types.
+
+```
+func Print(s interface{}) {
+    switch s.(type) {
+        case int:
+            fmt.Println(s.(int)+1)
+    }
+}
+```
+
+The biggest issue with Print() is that due to the use of the empty interface, it accepts all kinds of input. As a result, the function signature does not help us limit the allowed data types. The second issue with Print() is that we need to specifically handle each case.
+
+On the other hand, the compiler does not have to guess many things with that code, which is not the case with generics, where the compiler and the runtime have more work to do. This kind of work intruduces delays in the execution time.
+
+```
+func PrintGenerics[T any] (s T) {
+    fmt.Println(s)
+}
+```
+
+PrintGenerics() is a generic function that can handle all available data types simply and elegantly.
+
+## Summary
+
+Although a function with generics is more flexible, code with generics usually runs slower than code that works with predefined static data types. So, the price you pay for flexibility is execution speed. Similarly, Go code with generics has a bigger compilation time than equivalent code that does not use generics.
+
+At the end of the day, programming is about understanding the cost of your decisions. Only then can you consider yourself a programmer. So, understanding the cost of using generics instead of interfaces, reflection, or other techniques is important.
+
+
+
