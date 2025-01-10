@@ -9,4 +9,8 @@ in workspace folder, we have three subfolders:
 
 * pkg: For saving shared libraries
 
-* bin: For saving executable files of projects (both your projects and installed projects using go install).
+* bin: For saving executable binary files of projects (both your projects and installed projects using go install).
+
+\* For installing open source packages, you should use "go-install" command.
+
+\* All go projects, must have main package and main function. Otherwise, the program won't executed successfully.
